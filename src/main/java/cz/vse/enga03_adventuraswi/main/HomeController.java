@@ -2,7 +2,10 @@ package cz.vse.enga03_adventuraswi.main;
 
 import cz.vse.enga03_adventuraswi.logika.Hra;
 import cz.vse.enga03_adventuraswi.logika.IHra;
+import cz.vse.enga03_adventuraswi.logika.Prostor;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -10,6 +13,8 @@ import javafx.scene.control.*;
 import java.util.Optional;
 
 public class HomeController {
+    @FXML
+    private ListView panelVychodu;
     @FXML
     private Button tlacitkoOdesli;
     @FXML
@@ -19,10 +24,19 @@ public class HomeController {
 
     private IHra hra = new Hra();
 
+    private ObservableList<Prostor> seznamVychodu = FXCollections.observableArrayList();
+
     @FXML
     private void initialize() {
         vystup.appendText(hra.vratUvitani() + "\n\n");
         Platform.runLater(() -> vstup.requestFocus());
+        panelVychodu.setItems(seznamVychodu);
+    }
+
+    @FXML
+    private void aktualizujSeznamVychodu() {
+        seznamVychodu.clear();
+        seznamVychodu.addAll(hra.getHerniPlan().getAktualniProstor().getVychody());
     }
 
     @FXML
