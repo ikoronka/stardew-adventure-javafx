@@ -2,6 +2,11 @@ package cz.vse.enga03_adventuraswi.logika;
 
 import cz.vse.enga03_adventuraswi.logika.Vec;
 import cz.vse.enga03_adventuraswi.logika.Npc;
+import cz.vse.enga03_adventuraswi.main.Pozorovatel;
+import cz.vse.enga03_adventuraswi.main.PredmetPozorovani;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *  Class HerniPlan - třída představující mapu a stav adventury.
@@ -13,7 +18,7 @@ import cz.vse.enga03_adventuraswi.logika.Npc;
  *
  *@author     Amelie Engelmaierová
  */
-public class HerniPlan {
+public class HerniPlan implements PredmetPozorovani {
 
     private Prostor aktualniProstor;
     private Batoh batoh;
@@ -21,6 +26,7 @@ public class HerniPlan {
     private boolean zasazeno;
     private int zalivani;
     private int penize;
+    private Set<Pozorovatel> seznamPozorovatelu = new HashSet<>();
 
     /**
      *  Konstruktor který vytváří jednotlivé prostory a propojuje je pomocí východů.
@@ -87,6 +93,7 @@ public class HerniPlan {
      */
     public void setAktualniProstor(Prostor prostor) {
         aktualniProstor = prostor;
+        upozorniPozorovatele();
     }
 
     public Batoh getBatoh() {
@@ -136,4 +143,14 @@ public class HerniPlan {
         return true;
     }
 
+    @Override
+    public void registruj(Pozorovatel pozorovatel) {
+        seznamPozorovatelu.add(pozorovatel);
+    }
+
+    private void upozorniPozorovatele() {
+        for (Pozorovatel pozorovatel : seznamPozorovatelu) {
+            pozorovatel.aktualizuj();
+        }
+    }
 }
