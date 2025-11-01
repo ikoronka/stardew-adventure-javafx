@@ -3,8 +3,7 @@
 package cz.vse.enga03_adventuraswi.logika;
 
 
-
-
+import cz.vse.enga03_adventuraswi.main.PredmetPozorovani;
 
 /**
  *  Rozhraní které musí implementovat hra, je na ně navázáno uživatelské rozhraní
@@ -12,7 +11,7 @@ package cz.vse.enga03_adventuraswi.logika;
  *@author     Michael Kolling, Lubos Pavlicek, Jarmila Pavlickova
  *@version    pro školní rok 2016/2017
  */
-public interface IHra
+public interface IHra extends PredmetPozorovani
 {
     //== VEŘEJNÉ KONSTANTY =====================================================
     //== DEKLAROVANÉ METODY ====================================================

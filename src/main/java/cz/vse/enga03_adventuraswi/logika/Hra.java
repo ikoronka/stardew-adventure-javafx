@@ -1,6 +1,15 @@
 package cz.vse.enga03_adventuraswi.logika;
 
 import cz.vse.enga03_adventuraswi.logika.prikazy.*;
+import cz.vse.enga03_adventuraswi.main.Pozorovatel;
+import cz.vse.enga03_adventuraswi.main.PredmetPozorovani;
+import cz.vse.enga03_adventuraswi.main.ZmenaHry;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  *  Třída Hra - třída představující logiku adventury.
  *
@@ -12,6 +21,8 @@ public class Hra implements IHra {
     private SeznamPrikazu platnePrikazy;    // obsahuje seznam přípustných příkazů
     private HerniPlan herniPlan;
     private boolean konecHry = false;
+
+    private Map<ZmenaHry, Set<Pozorovatel>> seznamPozorovatelu = new HashMap<>();
 
     /**
      *  Vytváří hru a inicializuje místnosti (prostřednictvím třídy HerniPlan) a seznam platných příkazů.
@@ -30,6 +41,10 @@ public class Hra implements IHra {
         platnePrikazy.vlozPrikaz(new PrikazDaruj(herniPlan, this));
         platnePrikazy.vlozPrikaz(new PrikazMluv(herniPlan, this));
         platnePrikazy.vlozPrikaz(new PrikazUraz(herniPlan, this));
+
+        for (ZmenaHry zmenaHry : ZmenaHry.values()) {
+            seznamPozorovatelu.put(zmenaHry, new HashSet<>());
+        }
     }
 
     /**
@@ -97,6 +112,7 @@ public class Hra implements IHra {
      */
     public void setKonecHry(boolean konecHry) {
         this.konecHry = konecHry;
+        upozorniPozorovatele(ZmenaHry.KONEC_HRY);
     }
 
     /**
@@ -107,6 +123,17 @@ public class Hra implements IHra {
      */
     public HerniPlan getHerniPlan(){
         return herniPlan;
+    }
+
+    @Override
+    public void registruj(ZmenaHry zmenaHry, Pozorovatel pozorovatel) {
+        seznamPozorovatelu.get(zmenaHry).add(pozorovatel);
+    }
+
+    private void upozorniPozorovatele(ZmenaHry zmenaHry) {
+        for (Pozorovatel pozorovatel : seznamPozorovatelu.get(zmenaHry)) {
+            pozorovatel.aktualizuj();
+        }
     }
 
 }
