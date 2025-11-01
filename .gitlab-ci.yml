@@ -1,4 +1,4 @@
-# Použijeme stejný image jako kamarád (Maven 3.9 s Javou 21)
+# less outdated image
 image: maven:3.9.6-eclipse-temurin-21
 
 # Pipeline se spustí jen pro commity do 'main' nebo 'develop'
@@ -51,9 +51,9 @@ test_job:
       echo "Nalezen JAR: $JAR_FILE"
       cp "$JAR_FILE" "distribution/$NAME/"
 
-    # Pokud nemáš složku docs/ nebo README.md, tyto řádky smaž
-    - cp -r docs/ "distribution/$NAME/"
-    - cp README.md "distribution/$NAME/"
+    # future readme
+#    - cp -r docs/ "distribution/$NAME/"
+#    - cp README.md "distribution/$NAME/"
 
   artifacts:
     # Upravený název artefaktu pro tvůj projekt
