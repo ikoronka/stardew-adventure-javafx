@@ -1,10 +1,82 @@
-image: maven:3.8-openjdk-17
+# Použijeme stejný image jako kamarád (Maven 3.9 s Javou 21)
+image: maven:3.9.6-eclipse-temurin-21
 
-sestaveni:
-  - script:
-      - "mvn javafx:jlink -B"
-artifacts:
+# Pipeline se spustí jen pro commity do 'main' nebo 'develop'
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+# Definice fází pipeline
+stages:
+  - test
+  - package
+
+# Cache pro zrychlení budoucích buildů
+cache:
   paths:
-    - "target/*.zip"
-only:
-  - master
+    - .m2/repository
+
+# 1. Fáze: Testování
+test_job:
+  stage: test
+  script:
+    - echo "Spouštím testy..."
+    # 'mvn test' zkompiluje kód a spustí všechny JUnit testy
+    - mvn test
+  artifacts:
+    paths:
+      - target/surefire-reports/
+    when: always # Uloží reporty z testů
+
+# 2. Fáze: Balení pro různé platformy
+# Šablona jobu, abychom se neopakovali
+.package_template: &package_definition
+  stage: package
+  script:
+    - echo "Balím aplikaci pro $PLATFORM..."
+    # Použijeme příkaz 'clean package' s parametry pro platformu a název
+    # Tyto parametry (-D) přepíší výchozí hodnoty v pom.xml
+    - mvn clean package -Djavafx.platform=$PLATFORM -Djar.shadedName=$NAME
+    - echo "Vytvářím distribuční ZIP archiv pro $PLATFORM..."
+    - mkdir -p "distribution/$NAME"
+    
+    # Tento skript dynamicky najde JAR soubor, který byl právě vytvořen
+    - |
+      JAR_FILE=$(find target -name "*-$NAME.jar")
+      if [ -z "$JAR_FILE" ]; then
+        echo "Chyba: Nepodařilo se najít JAR soubor s názvem *-'$NAME'.jar ve složce target/"
+        exit 1
+      fi
+      echo "Nalezen JAR: $JAR_FILE"
+      cp "$JAR_FILE" "distribution/$NAME/"
+
+    # Pokud nemáš složku docs/ nebo README.md, tyto řádky smaž
+    - cp -r docs/ "distribution/$NAME/"
+    - cp README.md "distribution/$NAME/"
+
+  artifacts:
+    # Upravený název artefaktu pro tvůj projekt
+    name: "enga03_adventuraSWI-$NAME"
+    paths:
+      - "distribution/$NAME/"
+    expire_in: 1 week
+
+# Tři joby pro tři platformy, které používají šablonu
+package_windows:
+  extends: .package_template
+  variables:
+    PLATFORM: "win"
+    NAME: "windows"
+
+package_macos:
+  extends: .package_template
+  variables:
+    PLATFORM: "mac"
+    NAME: "macos"
+
+package_linux:
+  extends: .package_template
+  variables:
+    PLATFORM: "linux"
+    NAME: "linux"
