@@ -5,9 +5,9 @@ import cz.vse.enga03_adventuraswi.logika.IHra;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+
+import java.util.Optional;
 
 public class HomeController {
     @FXML
@@ -38,6 +38,14 @@ public class HomeController {
             vystup.appendText(hra.vratEpilog());
             vstup.setDisable(true);
             tlacitkoOdesli.setDisable(true);
+        }
+    }
+
+    public void ukoncitHru(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Skutečně si přejete ukončit hru?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Platform.exit();
         }
     }
 }
