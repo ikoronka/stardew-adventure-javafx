@@ -6,7 +6,7 @@
 
     <groupId>cz.vse</groupId>
     <artifactId>enga03_adventuraSWI</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>enga03_adventuraSWI</name>
 
     <properties>
@@ -65,11 +65,11 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>cz.vse.enga03_adventuraswi/cz.vse.enga03_adventuraswi.HelloApplication
+                            <mainClass>cz.vse.enga03_adventuraswi/cz.vse.enga03_adventuraswi.main.Start
                             </mainClass>
-                            <launcher>app</launcher>
-                            <jlinkZipName>app</jlinkZipName>
-                            <jlinkImageName>app</jlinkImageName>
+                            <launcher>${project.artifactId}</launcher>
+                            <jlinkZipName>${project.artifactId}-${project.version}</jlinkZipName>
+                            <jlinkImageName>${project.artifactId}</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
