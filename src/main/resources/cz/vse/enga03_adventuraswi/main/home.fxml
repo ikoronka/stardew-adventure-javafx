@@ -45,7 +45,7 @@
       <HBox spacing="10.0" GridPane.rowIndex="2">
          <children>
             <TextField fx:id="vstup" onAction="#odesliVstup" HBox.hgrow="ALWAYS" />
-            <Button onAction="#odesliVstup" mnemonicParsing="false" text="Odešli" />
+            <Button fx:id="tlacitkoOdesli" onAction="#odesliVstup" mnemonicParsing="false" text="Odešli" />
          </children>
       </HBox>
    </children>

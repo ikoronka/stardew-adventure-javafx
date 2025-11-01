@@ -52,7 +52,7 @@ public class Hra implements IHra {
      *  Vrátí závěrečnou zprávu pro hráče.
      */
     public String vratEpilog() {
-        return "Dík, že jste si zahráli. Doufám, že farmu nezapálíte hned zítra. Ahoj.";
+        return "Dík, že jste si zahráli.";
     }
 
     /**
