@@ -10,7 +10,7 @@ import cz.vse.enga03_adventuraswi.logika.Prostor;
  *@author     Amelie Engelmaierová
  */
 public class PrikazJdi implements IPrikaz {
-    private static final String NAZEV = "jdi";
+    public static final String NAZEV = "jdi";
     private HerniPlan plan;
     
     /**

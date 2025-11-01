@@ -3,18 +3,20 @@ package cz.vse.enga03_adventuraswi.main;
 import cz.vse.enga03_adventuraswi.logika.Hra;
 import cz.vse.enga03_adventuraswi.logika.IHra;
 import cz.vse.enga03_adventuraswi.logika.Prostor;
+import cz.vse.enga03_adventuraswi.logika.prikazy.PrikazJdi;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 
 import java.util.Optional;
 
 public class HomeController implements Pozorovatel{
     @FXML
-    private ListView panelVychodu;
+    private ListView<Prostor> panelVychodu;
     @FXML
     private Button tlacitkoOdesli;
     @FXML
@@ -44,16 +46,21 @@ public class HomeController implements Pozorovatel{
     @FXML
     private void odesliVstup(ActionEvent actionEvent) {
         String prikaz = vstup.getText();
-        vystup.appendText("> " + prikaz+"\n");
+        vstup.clear();
+
+        zpracujPrikaz(prikaz);
+    }
+
+    private void zpracujPrikaz(String prikaz) {
+        vystup.appendText("> " + prikaz +"\n");
         String vysledek = hra.zpracujPrikaz(prikaz);
         vystup.appendText(vysledek+"\n");
-        // delete after send
-        vstup.clear();
 
         if(hra.konecHry()) {
             vystup.appendText(hra.vratEpilog());
             vstup.setDisable(true);
             tlacitkoOdesli.setDisable(true);
+            panelVychodu.setDisable(true);
         }
     }
 
@@ -68,5 +75,13 @@ public class HomeController implements Pozorovatel{
     @Override
     public void aktualizuj() {
         aktualizujSeznamVychodu();
+    }
+
+    @FXML
+    private void klikPanelVychodu(MouseEvent mouseEvent) {
+        Prostor cil = panelVychodu.getSelectionModel().getSelectedItem();
+        if(cil == null) return;
+        String prikaz = PrikazJdi.NAZEV +  " " + cil;
+        zpracujPrikaz(prikaz);
     }
 }
