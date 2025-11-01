@@ -41,7 +41,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TextArea fx:id="vystup" GridPane.rowIndex="1" />
+      <TextArea fx:id="vystup" editable="false" GridPane.rowIndex="1" />
       <HBox spacing="10.0" GridPane.rowIndex="2">
          <children>
             <TextField fx:id="vstup" onAction="#odesliVstup" HBox.hgrow="ALWAYS" />
