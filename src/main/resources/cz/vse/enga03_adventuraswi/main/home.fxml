@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21">
+<GridPane fx:controller="cz.vse.enga03_adventuraswi.main.HomeController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
   </columnConstraints>
@@ -41,11 +41,11 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TextArea GridPane.rowIndex="1" />
+      <TextArea fx:id="vystup" GridPane.rowIndex="1" />
       <HBox spacing="10.0" GridPane.rowIndex="2">
          <children>
-            <TextField HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" text="Odešli" />
+            <TextField fx:id="vstup" onAction="#odesliVstup" HBox.hgrow="ALWAYS" />
+            <Button onAction="#odesliVstup" mnemonicParsing="false" text="Odešli" />
          </children>
       </HBox>
    </children>
