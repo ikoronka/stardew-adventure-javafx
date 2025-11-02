@@ -18,17 +18,17 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="636.0" prefWidth="898.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.vse.enga03_adventuraswi.main.HomeController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="786.0" prefWidth="729.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.vse.enga03_adventuraswi.main.HomeController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
   </columnConstraints>
-  <rowConstraints>
-    <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-    <RowConstraints prefHeight="1.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="45.0" minHeight="45.0" prefHeight="45.0" vgrow="NEVER" />
-    <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" vgrow="NEVER" />
-  </rowConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="NEVER" />
+        <RowConstraints vgrow="NEVER" />
+        <RowConstraints vgrow="ALWAYS" />
+        <RowConstraints maxHeight="45.0" minHeight="45.0" prefHeight="45.0" vgrow="NEVER" />
+        <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" vgrow="NEVER" />
+    </rowConstraints>
    <children>
       <MenuBar prefHeight="28.0" prefWidth="360.0" GridPane.columnSpan="2147483647">
         <menus>
@@ -58,20 +58,20 @@
             <TextArea fx:id="vystup" editable="false" />
          </items>
       </SplitPane>
-      <TitledPane animated="false" text="mapa" GridPane.rowIndex="1">
+      <TitledPane alignment="TOP_CENTER" animated="false" text="mapa" GridPane.rowIndex="1" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
            <content>
-               <HBox alignment="TOP_CENTER" minHeight="-Infinity">
+               <HBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="727.0">
                    <children>
                        <Pane>
                            <children>
-                               <ImageView fitHeight="804.0" fitWidth="457.0" pickOnBounds="true" preserveRatio="true">
+                               <ImageView fitHeight="418.0" fitWidth="729.0" layoutX="-11.0" pickOnBounds="true" preserveRatio="true">
                                    <image>
-                                       <Image url="@mapa.jpg" />
+                                       <Image url="@map.png" />
                                    </image>
                                </ImageView>
-                               <ImageView fitHeight="96.0" fitWidth="145.0" layoutX="14.0" layoutY="148.0" pickOnBounds="true" preserveRatio="true">
+                               <ImageView fx:id="hrac" fitHeight="59.0" fitWidth="53.0" layoutX="14.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true">
                                    <image>
-                                       <Image url="@forg.png" />
+                                       <Image url="@character.png" />
                                    </image>
                                </ImageView>
                            </children>

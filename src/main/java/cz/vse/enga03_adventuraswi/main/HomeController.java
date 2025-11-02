@@ -9,12 +9,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class HomeController {
+    @FXML
+    private ImageView hrac;
     @FXML
     private ListView<Prostor> panelVychodu;
     @FXML
@@ -28,15 +34,37 @@ public class HomeController {
 
     private ObservableList<Prostor> seznamVychodu = FXCollections.observableArrayList();
 
+    // seznam souradnic jednotlivych prostoru
+    private Map<String, Point2D> souradniceProstoru = new HashMap<>();
+
     @FXML
     private void initialize() {
         vystup.appendText(hra.vratUvitani() + "\n\n");
         Platform.runLater(() -> vstup.requestFocus());
         panelVychodu.setItems(seznamVychodu);
-        hra.getHerniPlan().registruj(ZmenaHry.ZMENA_MISTNOSTI, () -> aktualizujSeznamVychodu());
+        hra.getHerniPlan().registruj(ZmenaHry.ZMENA_MISTNOSTI, () -> {
+            aktualizujSeznamVychodu();
+            aktualizujPolohuHrace();
+        });
         hra.registruj(ZmenaHry.KONEC_HRY, () -> aktualizujKonecHry());
 
         aktualizujSeznamVychodu();
+        vlozSouradnice();
+    }
+
+    private void vlozSouradnice() {
+        souradniceProstoru.put("farma", new Point2D(127, 69));
+        souradniceProstoru.put("louka", new Point2D(179, 165));
+        souradniceProstoru.put("namesti", new Point2D(392, 222));
+        souradniceProstoru.put("obchod", new Point2D(598, 99));
+        souradniceProstoru.put("joja", new Point2D(569, 300));
+        souradniceProstoru.put("vez", new Point2D(14, 236));
+    }
+
+    private void aktualizujPolohuHrace(){
+        String prostor = hra.getHerniPlan().getAktualniProstor().getNazev();
+        hrac.setLayoutX(souradniceProstoru.get(prostor).getX());
+        hrac.setLayoutY(souradniceProstoru.get(prostor).getY());
     }
 
     @FXML
