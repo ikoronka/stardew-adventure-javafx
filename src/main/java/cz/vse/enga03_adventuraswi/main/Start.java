@@ -46,6 +46,11 @@ public class Start extends Application
         loader.setLocation(Start.class.getResource("home.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
+
+        // TODO: přepínání dark/light/možná systém?
+        String css = getClass().getResource("dark-theme.css").toExternalForm();
+        scene.getStylesheets().add(css);
+
         stage.setScene(scene);
         stage.show();
         stage.setTitle("Stardew Valley");

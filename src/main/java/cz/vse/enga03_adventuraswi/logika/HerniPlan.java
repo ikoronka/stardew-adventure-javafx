@@ -47,7 +47,7 @@ public class HerniPlan implements PredmetPozorovani {
      *  Jako výchozí aktuální prostor nastaví domeček.
      */
     private void zalozProstoryHry() {
-        farma = new Prostor("farma", "zarostla farma tveho dedecka");
+        Prostor farma = new Prostor("farma", "zarostla farma tveho dedecka");
         Prostor louka = new Prostor("louka", "cesta z farmy ke vezi a do mesta");
         Prostor namesti = new Prostor("namesti", "centrum mestecka");
         Prostor obchod = new Prostor("obchod", "obchod u Pierra");
@@ -67,8 +67,9 @@ public class HerniPlan implements PredmetPozorovani {
 
         farma.vlozVec(new Vec("motyka", true));
         farma.vlozVec(new Vec("konev", true));
-        farma.vlozVec(new Vec("klacky", false));
-        farma.vlozVec(new Vec("kamen", false));
+
+        louka.vlozVec(new Vec("klacky", false));
+        namesti.vlozVec(new Vec("kamen", false));
 
 
         namesti.vlozNpc(new Npc("lewis"));

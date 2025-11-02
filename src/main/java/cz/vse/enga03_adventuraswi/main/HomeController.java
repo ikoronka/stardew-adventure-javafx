@@ -17,6 +17,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,10 +72,21 @@ public class HomeController {
         souradniceProstoru.put("vez", new Point2D(14, 236));
     }
 
-    private void aktualizujPolohuHrace(){
+    private void aktualizujPolohuHrace() {
+        // ziskej nove souradnice
         String prostor = hra.getHerniPlan().getAktualniProstor().getNazev();
-        hrac.setLayoutX(souradniceProstoru.get(prostor).getX());
-        hrac.setLayoutY(souradniceProstoru.get(prostor).getY());
+        Point2D noveSouradnice = souradniceProstoru.get(prostor);
+
+        // definuj cilove hodnoty animace
+        KeyValue kvX = new KeyValue(hrac.layoutXProperty(), noveSouradnice.getX());
+        KeyValue kvY = new KeyValue(hrac.layoutYProperty(), noveSouradnice.getY());
+
+        // jak dlouho animace potrva
+        KeyFrame kf = new KeyFrame(Duration.millis(700), kvX, kvY);
+
+        // vytvor a spust animaci
+        Timeline timeline = new Timeline(kf);
+        timeline.play();
     }
 
     @FXML

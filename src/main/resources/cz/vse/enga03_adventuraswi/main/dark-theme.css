@@ -1,0 +1,33 @@
+.root {
+    -fx-base: #3a3a3a;
+    -fx-background: #2b2b2b;
+    -fx-control-inner-background: #424242;
+    -fx-control-inner-background-alt: derive(-fx-control-inner-background, -2%);
+    -fx-text-background-color: #e0e0e0;
+    -fx-accent: #0078d7;
+}
+
+.label, .menu-bar .label, .menu .label, .titled-pane > .title > .text {
+    -fx-text-fill: -fx-text-background-color;
+}
+
+.context-menu .label {
+    -fx-text-fill: black;
+}
+
+.text-input .content,
+.text-area .content {
+    -fx-background-color: -fx-control-inner-background;
+}
+
+.list-cell {
+    -fx-text-fill: -fx-text-background-color;
+}
+
+.list-cell:filled:selected {
+    -fx-text-fill: white;
+}
+
+.titled-pane > .content {
+    -fx-background-color: -fx-background;
+}
