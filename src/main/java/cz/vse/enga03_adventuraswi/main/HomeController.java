@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
@@ -31,6 +32,18 @@ public class HomeController {
     @FXML
     private ImageView hrac;
     @FXML
+    private ImageView farma;
+    @FXML
+    private ImageView louka;
+    @FXML
+    private ImageView namesti;
+    @FXML
+    private ImageView obchod;
+    @FXML
+    private ImageView joja;
+    @FXML
+    private ImageView vez;
+    @FXML
     private ListView<Prostor> panelVychodu;
     @FXML
     private Button tlacitkoOdesli;
@@ -38,6 +51,12 @@ public class HomeController {
     private TextArea vystup;
     @FXML
     private TextField vstup;
+    @FXML
+    private RadioMenuItem lightModeMenuItem;
+    @FXML
+    private RadioMenuItem darkModeMenuItem;
+    @FXML
+    private ImageView mapImageView;
 
     private IHra hra = new Hra();
 
@@ -59,8 +78,53 @@ public class HomeController {
 
         aktualizujSeznamVychodu();
         vlozSouradnice();
+        nastavKlikProstoru();
 
         panelVychodu.setCellFactory(param -> new ListCellProstor());
+        
+        // Initialize theme
+        aplikovatTema(true);
+    }
+
+    @FXML
+    private void zmenitTema(ActionEvent event) {
+        boolean isLightMode = lightModeMenuItem.isSelected();
+        aplikovatTema(isLightMode);
+    }
+
+    private void aplikovatTema(boolean isLightMode) {
+        Scene scene = hrac.getScene();
+        if (scene != null) {
+            // Clear existing stylesheets
+            scene.getStylesheets().clear();
+            
+            // Apply theme stylesheet
+            String themePath = isLightMode ? 
+                "/cz/vse/enga03_adventuraswi/main/light-theme.css" :
+                "/cz/vse/enga03_adventuraswi/main/dark-theme.css";
+            scene.getStylesheets().add(getClass().getResource(themePath).toExternalForm());
+
+            // Update map image
+            String mapPath = isLightMode ?
+                "/cz/vse/enga03_adventuraswi/main/mapa-light.png" :
+                "/cz/vse/enga03_adventuraswi/main/mapa-dark.png";
+            Image newMapImage = new Image(getClass().getResourceAsStream(mapPath));
+            mapImageView.setImage(newMapImage);
+        }
+    }
+
+    private void nastavKlikProstoru() {
+        farma.setOnMouseClicked(event -> klikProstor("farma"));
+        louka.setOnMouseClicked(event -> klikProstor("louka"));
+        namesti.setOnMouseClicked(event -> klikProstor("namesti"));
+        obchod.setOnMouseClicked(event -> klikProstor("obchod"));
+        joja.setOnMouseClicked(event -> klikProstor("joja"));
+        vez.setOnMouseClicked(event -> klikProstor("vez"));
+    }
+
+    private void klikProstor(String nazevProstoru) {
+        String prikaz = PrikazJdi.NAZEV + " " + nazevProstoru;
+        zpracujPrikaz(prikaz);
     }
 
     private void vlozSouradnice() {

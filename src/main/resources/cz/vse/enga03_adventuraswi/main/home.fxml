@@ -18,6 +18,8 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ToggleGroup?>
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="842.0" prefWidth="1149.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.vse.enga03_adventuraswi.main.HomeController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" />
@@ -36,6 +38,16 @@
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#ukoncitHru" text="Ukončit" />
                         <MenuItem mnemonicParsing="false" onAction="#napovedaKlik" text="Nápověda" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Vzhled">
+                    <items>
+                        <RadioMenuItem fx:id="lightModeMenuItem" mnemonicParsing="false" onAction="#zmenitTema" selected="true" text="Světlý režim">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="themeToggle" />
+                            </toggleGroup>
+                        </RadioMenuItem>
+                        <RadioMenuItem fx:id="darkModeMenuItem" mnemonicParsing="false" onAction="#zmenitTema" text="Tmavý režim" toggleGroup="$themeToggle" />
                     </items>
                 </Menu>
             </menus>
@@ -64,7 +76,7 @@
                     <children>
                         <Pane prefHeight="439.0" prefWidth="745.0"> <children>
 
-                            <ImageView fitHeight="418.0" fitWidth="729.0" layoutX="8.0" pickOnBounds="true" preserveRatio="true">
+                            <ImageView fx:id="mapImageView" fitHeight="418.0" fitWidth="729.0" layoutX="8.0" pickOnBounds="true" preserveRatio="true">
                                 <image>
                                     <Image url="@mapa-light.png" />
                                 </image>

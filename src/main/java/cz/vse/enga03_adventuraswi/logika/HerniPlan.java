@@ -71,7 +71,6 @@ public class HerniPlan implements PredmetPozorovani {
         louka.vlozVec(new Vec("klacky", false));
         namesti.vlozVec(new Vec("kamen", false));
 
-
         namesti.vlozNpc(new Npc("lewis"));
         louka.vlozNpc(new Npc("robin"));
         obchod.vlozNpc(new Npc("pierre"));
