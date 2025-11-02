@@ -76,7 +76,7 @@ public class HerniPlan implements PredmetPozorovani {
         obchod.vlozNpc(new Npc("pierre"));
         obchod.vlozNpc(new Npc("caroline"));
         vez.vlozNpc(new Npc("kouzelnik"));
-        joja.vlozNpc(new Npc("morriss"));
+        joja.vlozNpc(new Npc("morris"));
 
         aktualniProstor = farma;
     }

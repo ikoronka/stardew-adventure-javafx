@@ -16,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -123,7 +122,7 @@ public class HomeController {
     @FXML
     private void napovedaKlik(ActionEvent actionEvent) {
 
-        URL resourceUrl = getClass().getResource("/napoveda.html");
+        URL resourceUrl = getClass().getResource("/cz/vse/enga03_adventuraswi/main/napoveda.html");
 
         if (resourceUrl == null) {
             System.err.println("Chyba: Soubor 'napoveda.html' nebyl nalezen. Ujistěte se, že je v 'src/main/resources'.");
