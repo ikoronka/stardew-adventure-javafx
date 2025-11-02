@@ -77,7 +77,7 @@ public class HomeController {
         vlozSouradnice();
         nastavKlikProstoru();
 
-        // Start a new game (sets starting location to farm)
+            // spusteni nove hry od zacatku
         restartGame();
     }
 
@@ -94,10 +94,8 @@ public class HomeController {
 
     // restart hry a inicializace hrace na vychozi pozici farmy
     private void restartGame() {
-        // create new game model
-        this.hra = new Hra();
-
-        // registrace observeru pro zmeny ve hre
+            // vytvoreni nove instance hry
+        this.hra = new Hra();        // registrace observeru pro zmeny ve hre
         hra.getHerniPlan().registruj(ZmenaHry.ZMENA_MISTNOSTI, this::aktualizujPolohuHrace);
         hra.registruj(ZmenaHry.KONEC_HRY, this::aktualizujKonecHry);
         hra.getHerniPlan().registruj(ZmenaHry.ZMENA_INVENTARE, this::aktualizujPredmety);
@@ -229,7 +227,7 @@ public class HomeController {
         }
         zalijButton.setOnAction(event -> {
             zpracujPrikaz("zalij");
-            // ensure UI immediately reflects model change
+            // okamzita aktualizace zobrazeni
             aktualizujPredmety();
             zrusitVyberObjektu();
         });
