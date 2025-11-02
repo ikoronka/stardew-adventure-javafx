@@ -60,17 +60,15 @@ public class HomeController {
     private IHra hra = new Hra();
 
 
-    // seznam souradnic jednotlivych prostoru
-    private Map<String, Point2D> souradniceProstoru = new HashMap<>();
-    
-    @FXML
+        // mapa souradnic pro pozice hrace v jednotlivych prostorech
+        private Map<String, Point2D> souradniceProstoru = new HashMap<>();    @FXML
     private VBox akcePanel;
     
     @FXML
     private ImageView pierre, lewis, caroline, kouzelnik, robin, morris;
     
     @FXML
-    private ImageView klacky, kamen, motyka, konev;
+    private ImageView klacky, kamen, motyka, konev, seminko, rustStages;
 
     private ImageView selectedObject = null;
 
@@ -94,32 +92,30 @@ public class HomeController {
         }
     }
 
-    /**
-     * Restart the game and reinitialize UI state so the player starts at the farm.
-     */
+    // restart hry a inicializace hrace na vychozi pozici farmy
     private void restartGame() {
         // create new game model
         this.hra = new Hra();
 
-        // register observers
+        // registrace observeru pro zmeny ve hre
         hra.getHerniPlan().registruj(ZmenaHry.ZMENA_MISTNOSTI, this::aktualizujPolohuHrace);
         hra.registruj(ZmenaHry.KONEC_HRY, this::aktualizujKonecHry);
         hra.getHerniPlan().registruj(ZmenaHry.ZMENA_INVENTARE, this::aktualizujPredmety);
 
-        // reset UI
+        // reset UI komponent
         akcePanel.getChildren().clear();
         zrusitVyberObjektu();
         vystup.clear();
         vystup.appendText(hra.vratUvitani() + "\n\n");
 
-        // ensure coordinates are present and update player position
+        // inicializace pozice hrace
         vlozSouradnice();
         aktualizujPolohuHrace();
 
-        // apply currently selected theme
+        // nastaveni aktualniho tematu
         aplikovatTema(lightModeMenuItem != null ? lightModeMenuItem.isSelected() : true);
         
-        // update item visibility
+        // aktualizace viditelnosti predmetu
         aktualizujPredmety();
 
     }
@@ -133,16 +129,16 @@ public class HomeController {
     private void aplikovatTema(boolean isLightMode) {
         Scene scene = hrac.getScene();
         if (scene != null) {
-            // Clear existing stylesheets
+            // smazeme stary barvy
             scene.getStylesheets().clear();
             
-            // Apply theme stylesheet
+            // dame tam novy barvy
             String themePath = isLightMode ? 
                 "/cz/vse/enga03_adventuraswi/main/light-theme.css" :
                 "/cz/vse/enga03_adventuraswi/main/dark-theme.css";
             scene.getStylesheets().add(getClass().getResource(themePath).toExternalForm());
 
-            // Update map image
+            // dame tam novou mapu
             String mapPath = isLightMode ?
                 "/cz/vse/enga03_adventuraswi/main/mapa-light.png" :
                 "/cz/vse/enga03_adventuraswi/main/mapa-dark.png";
@@ -159,7 +155,7 @@ public class HomeController {
         joja.setOnMouseClicked(event -> klikProstor("joja"));
         vez.setOnMouseClicked(event -> klikProstor("vez"));
         
-        // Nastavení kliknutí pro NPC
+        // nastaveni kliknuti pro NPC
         pierre.setOnMouseClicked(event -> zobrazAkceNpc("pierre"));
         lewis.setOnMouseClicked(event -> zobrazAkceNpc("lewis"));
         caroline.setOnMouseClicked(event -> zobrazAkceNpc("caroline"));
@@ -167,15 +163,98 @@ public class HomeController {
         robin.setOnMouseClicked(event -> zobrazAkceNpc("robin"));
         morris.setOnMouseClicked(event -> zobrazAkceNpc("morris"));
         
-        // Nastavení kliknutí pro předměty
+        // nastaveni kliknuti pro predmety v prostoru
         klacky.setOnMouseClicked(event -> zobrazAkcePredmet("klacky"));
         kamen.setOnMouseClicked(event -> zobrazAkcePredmet("kamen"));
+        
         motyka.setOnMouseClicked(event -> zobrazAkcePredmet("motyka"));
         konev.setOnMouseClicked(event -> zobrazAkcePredmet("konev"));
+        
+        // aktivace interakce se seminkem pred zasazenim
+        seminko.setOnMouseClicked(event -> zobrazAkcePredmet("seminko"));
+        
+        // handler pro rustStages zobrazujici faze rustu rostliny
+        if (rustStages != null) {
+            rustStages.setOnMouseClicked(event -> zobrazAkceRostliny());
+        }
     }
     
+    private void zobrazAkceRostliny() {
+        // udelame rostlinku pruhlednejsi at je videt ze je vybrana
+        zrusitVyberObjektu();
+        // pouzivame vzdy rustStages protoze tam je rostlinka
+        ImageView plantView = rustStages; 
+        zvyraznitObjekt(plantView);
+
+        akcePanel.getChildren().clear();
+
+        Prostor aktualniProstor = hra.getHerniPlan().getAktualniProstor();
+
+        // Check if we're in the farm room first
+        if (!"farma".equals(aktualniProstor.getNazev())) {
+            Label upozorneni = new Label("Nejsi ve stejném prostoru!");
+            upozorneni.setStyle("-fx-font-weight: bold; -fx-text-fill: red;");
+            akcePanel.getChildren().add(upozorneni);
+            return;
+        }
+
+        // Determine which rust stage (if any) is present in the current room
+        String currentStage = null;
+        for (String s : new String[]{"rust1", "rust2", "rust3", "rust4", "sklizen"}) {
+            if (aktualniProstor.obsahujePredmet(s)) {
+                currentStage = s;
+                break;
+            }
+        }
+
+        // If nothing in rust stages but a seed was planted in the farm, treat it as a seed stage
+        if (currentStage == null && hra.getHerniPlan().isZasadeno()) {
+            currentStage = "seminko";
+        }
+
+        if (currentStage == null) {
+            Label upozorneni = new Label("Nejsi ve stejném prostoru!");
+            upozorneni.setStyle("-fx-font-weight: bold; -fx-text-fill: red;");
+            akcePanel.getChildren().add(upozorneni);
+            return;
+        }
+
+        // tlacitko pro zaliti - aktivni jen s konvi
+        Button zalijButton = new Button("Zalít");
+        zalijButton.setMaxWidth(Double.MAX_VALUE);
+        boolean hasKonev = hra.getHerniPlan().getBatoh().obsahujeVec("konev");
+        zalijButton.setDisable(!hasKonev);
+        if (!hasKonev) {
+            zalijButton.setTooltip(new Tooltip("Potřebuješ konev v batohu"));
+        }
+        zalijButton.setOnAction(event -> {
+            zpracujPrikaz("zalij");
+            // ensure UI immediately reflects model change
+            aktualizujPredmety();
+            zrusitVyberObjektu();
+        });
+        akcePanel.getChildren().add(zalijButton);
+
+        // tlacitko pro sklizen - jen pro zralou rostlinu a s motykou
+        if ("sklizen".equals(currentStage)) {
+            Button sklidButton = new Button("Sklidit");
+            sklidButton.setMaxWidth(Double.MAX_VALUE);
+            boolean hasMotyka = hra.getHerniPlan().getBatoh().obsahujeVec("motyka");
+            sklidButton.setDisable(!hasMotyka);
+            if (!hasMotyka) {
+                sklidButton.setTooltip(new Tooltip("Potřebuješ motyku v batohu"));
+            }
+            sklidButton.setOnAction(event -> {
+                zpracujPrikaz("sklid");
+                aktualizujPredmety();
+                zrusitVyberObjektu();
+            });
+            akcePanel.getChildren().add(sklidButton);
+        }
+    }
+
     private void zobrazAkceNpc(String jmenoNpc) {
-        // Zvýraznění vybraného NPC
+        // Zvýraznění vybrané NPC
         zrusitVyberObjektu();
         zvyraznitObjekt(getNpcImageView(jmenoNpc));
 
@@ -202,7 +281,7 @@ public class HomeController {
             zrusitVyberObjektu();
         });
         
-        // Add daruj button if player has pastinak
+        // pridani tlacitka pro darovani pastinaku
         if (hra.getHerniPlan().getBatoh().obsahujeVec("pastinak")) {
             Button darujButton = new Button("Darovat pastinák");
             darujButton.setMaxWidth(Double.MAX_VALUE);
@@ -234,6 +313,9 @@ public class HomeController {
         vezmiButton.setMaxWidth(Double.MAX_VALUE);
         vezmiButton.setOnAction(event -> {
             zpracujPrikaz("vezmi " + nazevPredmetu);
+            // Update UI: item was moved to inventory so refresh map and backpack
+            aktualizujPredmety();
+            aktualizujObsahBatohu();
             zrusitVyberObjektu();
         });
 
@@ -272,7 +354,9 @@ public class HomeController {
             case "klacky" -> klacky;
             case "kamen" -> kamen;
             case "motyka" -> motyka;
+            case "seminko" -> seminko;
             case "konev" -> konev;
+            case "rust1", "rust2", "rust3", "rust4", "sklizen" -> rustStages;
             default -> null;
         };
     }
@@ -292,18 +376,18 @@ public class HomeController {
     }
 
     private void aktualizujPolohuHrace() {
-        // ziskej nove souradnice
+            // ziskani cilovych souradnic
         String prostor = hra.getHerniPlan().getAktualniProstor().getNazev();
         Point2D noveSouradnice = souradniceProstoru.get(prostor);
 
-        // definuj cilove hodnoty animace
+        // nastaveni cilovych hodnot animace
         KeyValue kvX = new KeyValue(hrac.layoutXProperty(), noveSouradnice.getX());
         KeyValue kvY = new KeyValue(hrac.layoutYProperty(), noveSouradnice.getY());
 
-        // jak dlouho animace potrva
+        // nastaveni doby trvani animace
         KeyFrame kf = new KeyFrame(Duration.millis(700), kvX, kvY);
 
-        // vytvor a spust animaci
+        // spusteni animace pohybu
         Timeline timeline = new Timeline(kf);
         timeline.play();
     }
@@ -332,17 +416,44 @@ public class HomeController {
 
 
     private void aktualizujPredmety() {
-        // Hide all items that are in the inventory
-        for (String nazevPredmetu : new String[]{"motyka", "konev", "klacky", "kamen"}) {
+        // Projdeme všechny sbíratelné předměty na mapě
+        for (String nazevPredmetu : new String[]{"motyka", "konev", "klacky", "kamen", "seminko"}) {
             ImageView imageView = getPredmetImageView(nazevPredmetu);
             if (imageView != null) {
-                boolean jePredmetVInventari = !hra.getHerniPlan().getAktualniProstor().obsahujePredmet(nazevPredmetu);
-                imageView.setVisible(!jePredmetVInventari);
-                imageView.setManaged(!jePredmetVInventari); // This ensures the space is also removed
+                // Opravená logika: Obrázek je viditelný, POKUD je předmět v místnosti
+                boolean jePredmetVMistnosti = hra.getHerniPlan().getAktualniProstor().obsahujePredmet(nazevPredmetu);
+
+                imageView.setVisible(jePredmetVMistnosti);
+                imageView.setManaged(jePredmetVMistnosti); // Aby zmizel i z layoutu
             }
         }
-        
-        // If the backpack is open, update its contents
+
+        // aktualizace vizualniho stavu rostliny
+        Prostor aktualniProstor = hra.getHerniPlan().getAktualniProstor();
+        ImageView plantView = rustStages;
+        if (plantView != null) {
+            plantView.setVisible(false); // vychozi stav neviditelny
+            
+            // cesta k obrazkum fazi rustu v /rust/ adresari
+            if (aktualniProstor.obsahujePredmet("rust1")) {
+                plantView.setVisible(true);
+                plantView.setImage(new Image(getClass().getResource("/cz/vse/enga03_adventuraswi/main/rust/rust1.png").toExternalForm()));
+            } else if (aktualniProstor.obsahujePredmet("rust2")) {
+                plantView.setVisible(true);
+                plantView.setImage(new Image(getClass().getResource("/cz/vse/enga03_adventuraswi/main/rust/rust2.png").toExternalForm()));
+            } else if (aktualniProstor.obsahujePredmet("rust3")) {
+                plantView.setVisible(true);
+                plantView.setImage(new Image(getClass().getResource("/cz/vse/enga03_adventuraswi/main/rust/rust3.png").toExternalForm()));
+            } else if (aktualniProstor.obsahujePredmet("rust4")) {
+                plantView.setVisible(true);
+                plantView.setImage(new Image(getClass().getResource("/cz/vse/enga03_adventuraswi/main/rust/rust4.png").toExternalForm()));
+            } else if (aktualniProstor.obsahujePredmet("sklizen")) {
+                plantView.setVisible(true);
+                plantView.setImage(new Image(getClass().getResource("/cz/vse/enga03_adventuraswi/main/rust/sklizen.png").toExternalForm()));
+            }
+        }
+
+        // Pokud je batoh otevřený, rovnou aktualizujeme i jeho obsah
         if (batohContentPane.isVisible()) {
             aktualizujObsahBatohu();
         }
@@ -351,7 +462,7 @@ public class HomeController {
     private void aktualizujObsahBatohu() {
         batohContentPane.getChildren().clear();
         
-        // Create images for items in backpack
+        // vytvoreni obrazku pro predmety v batohu
         for (String nazevPredmetu : new String[]{"motyka", "konev", "seminko", "pastinak"}) {
             if (hra.getHerniPlan().getBatoh().obsahujeVec(nazevPredmetu)) {
                 ImageView itemImage;
@@ -384,6 +495,9 @@ public class HomeController {
             zasadButton.setMaxWidth(Double.MAX_VALUE);
             zasadButton.setOnAction(event -> {
                 zpracujPrikaz("zasad seminko");
+                // Immediately update UI so the seed disappears from inventory and plant appears
+                aktualizujObsahBatohu();
+                aktualizujPredmety();
                 zrusitVyberObjektu();
             });
             akcePanel.getChildren().add(zasadButton);
@@ -392,15 +506,24 @@ public class HomeController {
             zalijButton.setMaxWidth(Double.MAX_VALUE);
             zalijButton.setOnAction(event -> {
                 zpracujPrikaz("zalij");
+                // Ensure UI updates immediately after watering from inventory
+                aktualizujPredmety();
+                aktualizujObsahBatohu();
                 zrusitVyberObjektu();
             });
             akcePanel.getChildren().add(zalijButton);
+            
         } else if (nazevPredmetu.equals("motyka") && aktualniProstor.equals("farma")) {
-            if (hra.getHerniPlan().getAktualniProstor().obsahujePredmet("pastinak")) {
+            // Opraveno: Kontrolujeme 'sklizen' (rostlinu) ne 'pastinak' (předmět)
+            if (hra.getHerniPlan().getAktualniProstor().obsahujePredmet("sklizen")) {
                 Button sklidButton = new Button("Sklidit");
+                
                 sklidButton.setMaxWidth(Double.MAX_VALUE);
                 sklidButton.setOnAction(event -> {
                     zpracujPrikaz("sklid");
+                    // Update UI so harvested item / plant disappears and inventory updates
+                    aktualizujPredmety();
+                    aktualizujObsahBatohu();
                     zrusitVyberObjektu();
                 });
                 akcePanel.getChildren().add(sklidButton);
@@ -412,7 +535,7 @@ public class HomeController {
     private void prepnoutBatoh() {
         boolean jeBatohOtevreny = batohContentPane.isVisible();
         
-        // Create the animation for the backpack size
+        // animace zmeny velikosti batohu
         Duration duration = Duration.millis(300);
         KeyValue kvH = new KeyValue(batohImage.fitHeightProperty(), jeBatohOtevreny ? 150 : 50);
         KeyValue kvW = new KeyValue(batohImage.fitWidthProperty(), jeBatohOtevreny ? 150 : 50);

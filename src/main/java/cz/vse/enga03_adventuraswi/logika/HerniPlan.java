@@ -29,6 +29,7 @@ public class HerniPlan implements PredmetPozorovani {
     private boolean zasazeno;
     private int zalivani;
     private int penize;
+    private int rustStage;  // 0: not planted, 1-4: growth stages
     private Map<ZmenaHry, Set<Pozorovatel>> seznamPozorovatelu = new HashMap<>();
 
     /**
@@ -118,23 +119,50 @@ public class HerniPlan implements PredmetPozorovani {
     }
 
     public void zasad() {
+        // Kontrolu a odebrání semínka z batohu už provedl PrikazZasad.
+        // Tato metoda pouze nastaví herní stav po zasazení.
+
         zasazeno = true;
         zalivani = 0;
+
+        // Přidáme do farmy první fázi růstu, aby ji PrikazZalij našel
+        farma.vlozVec(new Vec("rust1", false));
+
+        // Upozorníme UI na změny (změnil se inventář v PrikazZasad
+        // a změnila se místnost - přibyl "rust1")
+        upozorniNaZmenuInventare();
+        upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI);
     }
 
     public void zalij() {
-        if (zasazeno) {
+        if (zasazeno && zalivani < 4) {
             zalivani++;
-            if (zalivani >= 3 && farma.najdiVec("pastinak") == null) {
-                farma.vlozVec(new Vec("pastinak", true));
-            }
+            String currentStage = "rust" + zalivani;
+            String nextStage = (zalivani == 4) ? "sklizen" : "rust" + (zalivani + 1);
+            
+            farma.odeberVec(currentStage);
+            farma.vlozVec(new Vec(nextStage, false));
+            
+            upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI);
         }
     }
     
+    public int getZalivani() {
+        return zalivani;
+    }
+
     public void sklid() {
+        // Tuto metodu volá PrikazSklid *poté*, co úspěšně
+        // odebral "sklizen" z farmy a přidal "pastinak" do batohu.
+        // Jediný úkol této metody je resetovat stav pěstování.
+
         zasazeno = false;
         zalivani = 0;
+
+        // Upozorníme pozorovatele, že se změnil inventář (přibyl pastinak)
+        // a místnost (zmizel "sklizen")
         upozorniNaZmenuInventare();
+        upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI);
     }
 
     public boolean jeDozrano() {

@@ -86,7 +86,25 @@
                         <Image url="@prostory/farma.png" />
                     </image>
                 </ImageView>
-                <ImageView fx:id="klacky" fitHeight="50.0" fitWidth="50.0" layoutX="112.0" layoutY="338.0" pickOnBounds="true" preserveRatio="true">
+                    <!-- Seed placeholder (hidden until planted) placed near the watering can -->
+                    <ImageView fx:id="seminko" fitHeight="50.0" fitWidth="50.0" layoutX="214.0" layoutY="106.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                        <image>
+                            <Image url="@veci/seminko.png" />
+                        </image>
+                    </ImageView>
+                    <!-- Tool: motyka (single instance) -->
+                    <ImageView fx:id="motyka" fitHeight="50.0" fitWidth="50.0" layoutX="212.0" layoutY="72.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@veci/motyka.png" />
+                        </image>
+                    </ImageView>
+                    <!-- Growth stages image (will be swapped between rust1..rust4 and sklizen) -->
+                    <ImageView fx:id="rustStages" fitHeight="50.0" fitWidth="50.0" layoutX="214.0" layoutY="106.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                        <image>
+                            <Image url="@veci/rust1.png" />
+                        </image>
+                    </ImageView>
+                    <ImageView fx:id="klacky" fitHeight="50.0" fitWidth="50.0" layoutX="112.0" layoutY="338.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@veci/klacky.png" />
                     </image>
@@ -96,17 +114,13 @@
                         <Image url="@veci/kamen.png" />
                     </image>
                 </ImageView>
-                <ImageView fx:id="motyka" fitHeight="50.0" fitWidth="50.0" layoutX="212.0" layoutY="72.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@veci/motyka.png" />
-                    </image>
-                </ImageView>
-                <ImageView fx:id="konev" fitHeight="50.0" fitWidth="50.0" layoutX="214.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true">
+                
+                <ImageView fx:id="konev" fitHeight="50.0" fitWidth="50.0" layoutX="214.0" layoutY="106.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@veci/konev.png" />
                     </image>
                 </ImageView>
-                <ImageView fx:id="hrac" fitHeight="59.0" fitWidth="53.0" layoutX="39.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fx:id="hrac" fitHeight="59.0" fitWidth="53.0" layoutX="139.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@character.png" />
                     </image>
@@ -161,17 +175,17 @@
             <children>
                 <VBox fx:id="batohContentPane" alignment="CENTER" managed="false" spacing="10" visible="false">
                     <padding>
-                        <Insets bottom="10.0"/>
+                        <Insets bottom="10.0" />
                     </padding>
                 </VBox>
-                <ImageView fx:id="batohImage" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#prepnoutBatoh">
+                <ImageView fx:id="batohImage" fitHeight="150.0" fitWidth="150.0" onMouseClicked="#prepnoutBatoh" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@batoh.png" />
                     </image>
                 </ImageView>
             </children>
             <padding>
-                <Insets bottom="20.0" left="10.0" right="10.0"/>
+                <Insets bottom="20.0" left="10.0" right="10.0" />
             </padding>
         </VBox>
     </children>

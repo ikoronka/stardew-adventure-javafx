@@ -20,15 +20,36 @@ public class PrikazSklid implements IPrikaz {
         if (!plan.getAktualniProstor().getNazev().equals("farma")) {
             return "Sklidit můžeš jen na farmě.";
         }
-        Vec pastinak = plan.getAktualniProstor().odeberVec("pastinak");
-        if (pastinak == null) {
-            return "Není co sklízet.";
+
+        // Kontrola motyky
+        if (!plan.getBatoh().obsahujeVec("motyka")) {
+            return "Nemáš motyku, nemůžeš sklízet.";
         }
+
+        // Zkusíme z místnosti odebrat předmět "sklizen"
+        Vec sklizen = plan.getAktualniProstor().odeberVec("sklizen");
+
+        // Pokud v místnosti "sklizen" není, není co sklízet
+        if (sklizen == null) {
+            return "Není co sklízet. Ujisti se, že je plodina plně dorostlá.";
+        }
+
+        // Vytvoříme novou věc "pastinak", kterou dáme hráči
+        Vec pastinak = new Vec("pastinak", true); // true = přenositelný
+
+        // Pokusíme se vložit pastinak do batohu
         if (!plan.getBatoh().vlozVec(pastinak)) {
-            plan.getAktualniProstor().vlozVec(pastinak);
-            return "Batoh je plný.";
+            // Pokud se to nepovedlo (plný batoh), vrátíme "sklizen" zpět do místnosti
+            plan.getAktualniProstor().vlozVec(sklizen);
+            return "Batoh je plný. Nemůžeš sklidit pastinak.";
         }
-        plan.sklid();
+
+        // Pokud se vše povedlo:
+        // 1. Pastinak je v batohu.
+        // 2. "sklizen" je pryč z místnosti.
+        // 3. Teď musíme resetovat stav farmy v HerniPlanu.
+        plan.sklid(); // Tato metoda teď bude jen resetovat stav
+
         return "Sklidil jsi pastinak.";
     }
 
