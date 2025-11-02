@@ -45,11 +45,11 @@ public class HomeController {
     @FXML
     private ImageView vez;
     @FXML
-    private Button tlacitkoOdesli;
+    private ImageView batohImage;
+    @FXML
+    private VBox batohContentPane;
     @FXML
     private TextArea vystup;
-    @FXML
-    private TextField vstup;
     @FXML
     private RadioMenuItem lightModeMenuItem;
     @FXML
@@ -76,16 +76,52 @@ public class HomeController {
 
     @FXML
     private void initialize() {
-        vystup.appendText(hra.vratUvitani() + "\n\n");
-        Platform.runLater(() -> vstup.requestFocus());
-        hra.getHerniPlan().registruj(ZmenaHry.ZMENA_MISTNOSTI, this::aktualizujPolohuHrace);
-        hra.registruj(ZmenaHry.KONEC_HRY, this::aktualizujKonecHry);
-
         vlozSouradnice();
         nastavKlikProstoru();
+
+        // Start a new game (sets starting location to farm)
+        restartGame();
+    }
+
+    @FXML
+    private void novaHra(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Skutečně si přejete začít novou hru?");
+        alert.setTitle("Nová hra");
+        alert.setHeaderText("Potvrzení nové hry");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            restartGame();
+        }
+    }
+
+    /**
+     * Restart the game and reinitialize UI state so the player starts at the farm.
+     */
+    private void restartGame() {
+        // create new game model
+        this.hra = new Hra();
+
+        // register observers
+        hra.getHerniPlan().registruj(ZmenaHry.ZMENA_MISTNOSTI, this::aktualizujPolohuHrace);
+        hra.registruj(ZmenaHry.KONEC_HRY, this::aktualizujKonecHry);
+        hra.getHerniPlan().registruj(ZmenaHry.ZMENA_INVENTARE, this::aktualizujPredmety);
+
+        // reset UI
+        akcePanel.getChildren().clear();
+        zrusitVyberObjektu();
+        vystup.clear();
+        vystup.appendText(hra.vratUvitani() + "\n\n");
+
+        // ensure coordinates are present and update player position
+        vlozSouradnice();
+        aktualizujPolohuHrace();
+
+        // apply currently selected theme
+        aplikovatTema(lightModeMenuItem != null ? lightModeMenuItem.isSelected() : true);
         
-        // Initialize theme
-        aplikovatTema(true);
+        // update item visibility
+        aktualizujPredmety();
+
     }
 
     @FXML
@@ -166,7 +202,18 @@ public class HomeController {
             zrusitVyberObjektu();
         });
         
-        akcePanel.getChildren().addAll(mluvButton, urazButton);
+        // Add daruj button if player has pastinak
+        if (hra.getHerniPlan().getBatoh().obsahujeVec("pastinak")) {
+            Button darujButton = new Button("Darovat pastinák");
+            darujButton.setMaxWidth(Double.MAX_VALUE);
+            darujButton.setOnAction(event -> {
+                zpracujPrikaz("daruj " + jmenoNpc + " pastinak");
+                zrusitVyberObjektu();
+            });
+            akcePanel.getChildren().addAll(mluvButton, urazButton, darujButton);
+        } else {
+            akcePanel.getChildren().addAll(mluvButton, urazButton);
+        }
     }
     
     private void zobrazAkcePredmet(String nazevPredmetu) {
@@ -236,7 +283,7 @@ public class HomeController {
     }
 
     private void vlozSouradnice() {
-        souradniceProstoru.put("farma", new Point2D(126, 100));
+        souradniceProstoru.put("farma", new Point2D(140, 100));
         souradniceProstoru.put("louka", new Point2D(148, 236));
         souradniceProstoru.put("namesti", new Point2D(358, 267));
         souradniceProstoru.put("obchod", new Point2D(358, 132));
@@ -266,17 +313,7 @@ public class HomeController {
 
         if(hra.konecHry()) {
             vystup.appendText(hra.vratEpilog());
-            vstup.setDisable(true);
-        tlacitkoOdesli.setDisable(true);
         }
-    }
-
-    @FXML
-    private void odesliVstup(ActionEvent actionEvent) {
-        String prikaz = vstup.getText();
-        vstup.clear();
-
-        zpracujPrikaz(prikaz);
     }
 
     private void zpracujPrikaz(String prikaz) {
@@ -293,6 +330,104 @@ public class HomeController {
         }
     }
 
+
+    private void aktualizujPredmety() {
+        // Hide all items that are in the inventory
+        for (String nazevPredmetu : new String[]{"motyka", "konev", "klacky", "kamen"}) {
+            ImageView imageView = getPredmetImageView(nazevPredmetu);
+            if (imageView != null) {
+                boolean jePredmetVInventari = !hra.getHerniPlan().getAktualniProstor().obsahujePredmet(nazevPredmetu);
+                imageView.setVisible(!jePredmetVInventari);
+                imageView.setManaged(!jePredmetVInventari); // This ensures the space is also removed
+            }
+        }
+        
+        // If the backpack is open, update its contents
+        if (batohContentPane.isVisible()) {
+            aktualizujObsahBatohu();
+        }
+    }
+
+    private void aktualizujObsahBatohu() {
+        batohContentPane.getChildren().clear();
+        
+        // Create images for items in backpack
+        for (String nazevPredmetu : new String[]{"motyka", "konev", "seminko", "pastinak"}) {
+            if (hra.getHerniPlan().getBatoh().obsahujeVec(nazevPredmetu)) {
+                ImageView itemImage;
+                if (nazevPredmetu.equals("seminko")) {
+                    Image img = new Image(getClass().getResourceAsStream("/cz/vse/enga03_adventuraswi/main/veci/seminko.png"));
+                    itemImage = new ImageView(img);
+                } else if (nazevPredmetu.equals("pastinak")) {
+                    Image img = new Image(getClass().getResourceAsStream("/cz/vse/enga03_adventuraswi/main/veci/pastinak.png"));
+                    itemImage = new ImageView(img);
+                } else {
+                    itemImage = new ImageView(getPredmetImageView(nazevPredmetu).getImage());
+                }
+                itemImage.setFitHeight(50);
+                itemImage.setFitWidth(50);
+                
+                // Add click handler
+                itemImage.setOnMouseClicked(event -> zobrazAkcePredmetuInventare(nazevPredmetu));
+                
+                batohContentPane.getChildren().add(itemImage);
+            }
+        }
+    }
+    
+    private void zobrazAkcePredmetuInventare(String nazevPredmetu) {
+        akcePanel.getChildren().clear();
+        String aktualniProstor = hra.getHerniPlan().getAktualniProstor().getNazev();
+        
+        if (nazevPredmetu.equals("seminko") && aktualniProstor.equals("farma")) {
+            Button zasadButton = new Button("Zasadit");
+            zasadButton.setMaxWidth(Double.MAX_VALUE);
+            zasadButton.setOnAction(event -> {
+                zpracujPrikaz("zasad seminko");
+                zrusitVyberObjektu();
+            });
+            akcePanel.getChildren().add(zasadButton);
+        } else if (nazevPredmetu.equals("konev")) {
+            Button zalijButton = new Button("Zalít");
+            zalijButton.setMaxWidth(Double.MAX_VALUE);
+            zalijButton.setOnAction(event -> {
+                zpracujPrikaz("zalij");
+                zrusitVyberObjektu();
+            });
+            akcePanel.getChildren().add(zalijButton);
+        } else if (nazevPredmetu.equals("motyka") && aktualniProstor.equals("farma")) {
+            if (hra.getHerniPlan().getAktualniProstor().obsahujePredmet("pastinak")) {
+                Button sklidButton = new Button("Sklidit");
+                sklidButton.setMaxWidth(Double.MAX_VALUE);
+                sklidButton.setOnAction(event -> {
+                    zpracujPrikaz("sklid");
+                    zrusitVyberObjektu();
+                });
+                akcePanel.getChildren().add(sklidButton);
+            }
+        }
+    }
+
+    @FXML
+    private void prepnoutBatoh() {
+        boolean jeBatohOtevreny = batohContentPane.isVisible();
+        
+        // Create the animation for the backpack size
+        Duration duration = Duration.millis(300);
+        KeyValue kvH = new KeyValue(batohImage.fitHeightProperty(), jeBatohOtevreny ? 150 : 50);
+        KeyValue kvW = new KeyValue(batohImage.fitWidthProperty(), jeBatohOtevreny ? 150 : 50);
+        KeyFrame kf = new KeyFrame(duration, kvH, kvW);
+        
+        Timeline timeline = new Timeline(kf);
+        timeline.setOnFinished(e -> {
+            if (!jeBatohOtevreny) {
+                aktualizujObsahBatohu();
+            }
+            batohContentPane.setManaged(!jeBatohOtevreny);
+            batohContentPane.setVisible(!jeBatohOtevreny);
+        });
+        timeline.play();
+    }
 
     @FXML
     private void napovedaKlik(ActionEvent actionEvent) {

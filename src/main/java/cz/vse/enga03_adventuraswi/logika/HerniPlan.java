@@ -79,6 +79,7 @@ public class HerniPlan implements PredmetPozorovani {
         joja.vlozNpc(new Npc("morris"));
 
         aktualniProstor = farma;
+        this.farma = farma;  // Save reference to farma for later use
     }
 
     /**
@@ -96,9 +97,16 @@ public class HerniPlan implements PredmetPozorovani {
      *
      *@param  prostor nový aktuální prostor
      */
-    public void setAktualniProstor(Prostor prostor) {
+    public void nastavAktualniProstor(Prostor prostor) {
         aktualniProstor = prostor;
         upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI);
+    }
+
+    /**
+     * Upozorní pozorovatele na změnu inventáře
+     */
+    public void upozorniNaZmenuInventare() {
+        upozorniPozorovatele(ZmenaHry.ZMENA_INVENTARE);
     }
 
     public Batoh getBatoh() {
@@ -117,19 +125,20 @@ public class HerniPlan implements PredmetPozorovani {
     public void zalij() {
         if (zasazeno) {
             zalivani++;
-            if (zalivani >= 4 && farma.najdiVec("pastinak") == null) {
+            if (zalivani >= 3 && farma.najdiVec("pastinak") == null) {
                 farma.vlozVec(new Vec("pastinak", true));
             }
         }
     }
-
-    public boolean jeDozrano() {
-        return zalivani >= 4;
-    }
-
+    
     public void sklid() {
         zasazeno = false;
         zalivani = 0;
+        upozorniNaZmenuInventare();
+    }
+
+    public boolean jeDozrano() {
+        return zalivani >= 4;
     }
 
     public int getPenize() {

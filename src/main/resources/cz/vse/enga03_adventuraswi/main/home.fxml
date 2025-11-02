@@ -6,13 +6,11 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
@@ -33,6 +31,7 @@
             <menus>
                 <Menu mnemonicParsing="false" text="Hra">
                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#novaHra" text="Nová hra" />
                         <MenuItem mnemonicParsing="false" onAction="#ukoncitHru" text="Ukončit" />
                         <MenuItem mnemonicParsing="false" onAction="#napovedaKlik" text="Nápověda" />
                     </items>
@@ -49,143 +48,131 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <TextArea fx:id="vystup" editable="false" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-        <TitledPane alignment="TOP_CENTER" animated="false" text="mapa" GridPane.rowIndex="1" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
-            <content>
-                <HBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="727.0">
-                    <children>
-                        <Pane prefHeight="439.0" prefWidth="745.0"> <children>
+        <ImageView fx:id="mapImageView" fitHeight="418.0" fitWidth="729.0" layoutX="8.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1">
+            <image>
+                <Image url="@mapa-light.png" />
+            </image>
+        </ImageView>
 
-                            <ImageView fx:id="mapImageView" fitHeight="418.0" fitWidth="729.0" layoutX="8.0" pickOnBounds="true" preserveRatio="true">
-                                <image>
-                                    <Image url="@mapa-light.png" />
-                                </image>
-                            </ImageView>
-
-                            <Pane fx:id="locationIconPane" layoutX="19.0">
-                                <children>
-                                    <ImageView fx:id="vez" fitHeight="150.0" fitWidth="200.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@prostory/vez.png" />
-                                        </image>
-                                    </ImageView>
-                                    <ImageView fx:id="namesti" fitHeight="76.0" fitWidth="95.0" layoutX="431.0" layoutY="211.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@prostory/namesti.png" />
-                                        </image>
-                                    </ImageView>
-                                    <ImageView fx:id="louka" fitHeight="66.0" fitWidth="70.0" layoutX="195.0" layoutY="170.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@prostory/louka.png" />
-                                        </image>
-                                    </ImageView>
-                                    <ImageView fx:id="joja" fitHeight="67.0" fitWidth="76.0" layoutX="639.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@prostory/joja.png" />
-                                        </image>
-                                    </ImageView>
-                                    <ImageView fx:id="obchod" fitHeight="64.0" fitWidth="61.0" layoutX="455.0" layoutY="89.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@prostory/obchod.png" />
-                                        </image>
-                                    </ImageView>
-                                    <ImageView fx:id="farma" fitHeight="51.0" fitWidth="53.0" layoutX="208.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@prostory/farma.png" />
-                                        </image>
-                                    </ImageView>
-                              <ImageView fx:id="klacky" fitHeight="50.0" fitWidth="50.0" layoutX="101.0" layoutY="328.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@veci/klacky.png" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fx:id="kamen" fitHeight="50.0" fitWidth="50.0" layoutX="270.0" layoutY="336.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@veci/kamen.png" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fx:id="motyka" fitHeight="50.0" fitWidth="50.0" layoutX="212.0" layoutY="72.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@veci/motyka.png" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fx:id="konev" fitHeight="50.0" fitWidth="50.0" layoutX="214.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@veci/konev.png" />
-                                 </image>
-                              </ImageView>
-                                    <ImageView fx:id="hrac" fitHeight="59.0" fitWidth="53.0" layoutX="39.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@character.png" />
-                                        </image>
-                                    </ImageView>
-                                </children>
-                            </Pane>
-                        <ImageView fx:id="pierre" fitHeight="50.0" fitWidth="50.0" layoutX="440.0" layoutY="152.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@npc/pierre.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="lewis" fitHeight="50.0" fitWidth="50.0" layoutX="490.0" layoutY="290.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@npc/lewis.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="caroline" fitHeight="50.0" fitWidth="50.0" layoutX="490.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@npc/caroline.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="kouzelnik" fitHeight="50.0" fitWidth="50.0" layoutX="60.0" layoutY="165.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@npc/kouzelnik.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="robin" fitHeight="50.0" fitWidth="50.0" layoutX="230.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@npc/robin.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="morris" fitHeight="50.0" fitWidth="50.0" layoutX="685.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@npc/morris.png" />
-                           </image>
-                        </ImageView>
-
-                        </children>
-                        </Pane>
-                    </children>
-                </HBox>
-            </content>
-        </TitledPane>
-      <VBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-         <children>
-            <TitledPane animated="false" text="Akce">
-               <content>
-                  <VBox fx:id="akcePanel" spacing="5.0">
-                     <padding>
+        <Pane fx:id="locationIconPane" layoutX="19.0" GridPane.rowIndex="1">
+            <children>
+                <ImageView fx:id="vez" fitHeight="150.0" fitWidth="200.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@prostory/vez.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="namesti" fitHeight="76.0" fitWidth="95.0" layoutX="431.0" layoutY="211.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@prostory/namesti.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="louka" fitHeight="66.0" fitWidth="70.0" layoutX="195.0" layoutY="170.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@prostory/louka.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="joja" fitHeight="67.0" fitWidth="76.0" layoutX="639.0" layoutY="235.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@prostory/joja.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="obchod" fitHeight="64.0" fitWidth="61.0" layoutX="455.0" layoutY="89.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@prostory/obchod.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="farma" fitHeight="51.0" fitWidth="53.0" layoutX="208.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@prostory/farma.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="klacky" fitHeight="50.0" fitWidth="50.0" layoutX="112.0" layoutY="338.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@veci/klacky.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="kamen" fitHeight="50.0" fitWidth="50.0" layoutX="285.0" layoutY="338.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@veci/kamen.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="motyka" fitHeight="50.0" fitWidth="50.0" layoutX="212.0" layoutY="72.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@veci/motyka.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="konev" fitHeight="50.0" fitWidth="50.0" layoutX="214.0" layoutY="111.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@veci/konev.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="hrac" fitHeight="59.0" fitWidth="53.0" layoutX="39.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@character.png" />
+                    </image>
+                </ImageView>
+              <ImageView fx:id="morris" fitHeight="50.0" fitWidth="50.0" layoutX="677.0" layoutY="297.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="@npc/morris.png" />
+                  </image>
+              </ImageView>
+              <ImageView fx:id="robin" fitHeight="50.0" fitWidth="50.0" layoutX="214.0" layoutY="241.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="@npc/robin.png" />
+                  </image>
+              </ImageView>
+              <ImageView fx:id="kouzelnik" fitHeight="50.0" fitWidth="50.0" layoutX="51.0" layoutY="186.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="@npc/kouzelnik.png" />
+                  </image>
+              </ImageView>
+              <ImageView fx:id="caroline" fitHeight="50.0" fitWidth="50.0" layoutX="486.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="@npc/caroline.png" />
+                  </image>
+              </ImageView>
+              <ImageView fx:id="lewis" fitHeight="50.0" fitWidth="50.0" layoutX="473.0" layoutY="288.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="@npc/lewis.png" />
+                  </image>
+              </ImageView>
+      
+              <ImageView fx:id="pierre" fitHeight="50.0" fitWidth="50.0" layoutX="443.0" layoutY="153.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="@npc/pierre.png" />
+                  </image>
+              </ImageView>
+            </children>
+        </Pane>
+        <VBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <children>
+                <VBox fx:id="akcePanel" spacing="5.0">
+                    <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </VBox>
-               </content>
-            </TitledPane>
-            <TitledPane animated="false" text="Inventář">
-               <content>
-                  <VBox alignment="CENTER">
-                     <children>
-                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@batoh.png" />
-                           </image>
-                        </ImageView>
-                     </children>
-                  </VBox>
-               </content>
-            </TitledPane>
-         </children>
-         <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </padding>
-      </VBox>
+                    </padding>
+                </VBox>
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </VBox>
+      <TextArea fx:id="vystup" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" />
+      <VBox alignment="BOTTOM_CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <children>
+                <VBox fx:id="batohContentPane" alignment="CENTER" managed="false" spacing="10" visible="false">
+                    <padding>
+                        <Insets bottom="10.0"/>
+                    </padding>
+                </VBox>
+                <ImageView fx:id="batohImage" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#prepnoutBatoh">
+                    <image>
+                        <Image url="@batoh.png" />
+                    </image>
+                </ImageView>
+            </children>
+            <padding>
+                <Insets bottom="20.0" left="10.0" right="10.0"/>
+            </padding>
+        </VBox>
     </children>
 </GridPane>

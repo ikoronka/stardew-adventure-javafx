@@ -56,7 +56,7 @@ public class HraTest {
         hra1.zpracujPrikaz("jdi namesti");
         hra1.zpracujPrikaz("jdi louka");
         hra1.zpracujPrikaz("jdi farma");
-        hra1.zpracujPrikaz("zasad semeno");
+        hra1.zpracujPrikaz("zasad seminko");
         hra1.zpracujPrikaz("zalij");
         hra1.zpracujPrikaz("zalij");
         hra1.zpracujPrikaz("zalij");
