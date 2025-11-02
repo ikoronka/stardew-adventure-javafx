@@ -18,8 +18,8 @@
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="842.0" prefWidth="1149.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.vse.enga03_adventuraswi.main.HomeController">
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS" minWidth="730.0" prefWidth="730.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+        <ColumnConstraints hgrow="NEVER" minWidth="930.0" prefWidth="930.0" />
+        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints vgrow="NEVER" />
@@ -177,9 +177,22 @@
             </padding>
         </VBox>
 
-        <VBox GridPane.rowIndex="2">
+        <GridPane GridPane.rowIndex="2">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="200.0" />
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+            </rowConstraints>
             <children>
-                <ScrollPane fx:id="vystupScrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" styleClass="vystup-scroll-pane" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                <VBox fx:id="akcePanel" alignment="TOP_CENTER" spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+
+                <ScrollPane fx:id="vystupScrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" styleClass="vystup-scroll-pane" vbarPolicy="AS_NEEDED" GridPane.columnIndex="1" GridPane.rowIndex="0">
                     <content>
                         <VBox fx:id="vystupPanel" alignment="TOP_CENTER" spacing="8.0">
                             <padding>
@@ -188,12 +201,7 @@
                         </VBox>
                     </content>
                 </ScrollPane>
-                <VBox fx:id="akcePanel" alignment="CENTER" spacing="5.0">
-                    <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                    </padding>
-                </VBox>
             </children>
-        </VBox>
+        </GridPane>
     </children>
 </GridPane>

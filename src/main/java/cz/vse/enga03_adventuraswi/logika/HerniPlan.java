@@ -12,12 +12,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *  Class HerniPlan - třída představující mapu a stav adventury.
+ * Class HerniPlan - třída představující mapu a stav adventury.
  *
- *  Tato třída inicializuje prvky ze kterých se hra skládá:
- *  vytváří všechny prostory,
- *  propojuje je vzájemně pomocí východů
- *  a pamatuje si aktuální prostor, ve kterém se hráč právě nachází.
+ * Tato třída inicializuje prvky ze kterých se hra skládá:
+ * vytváří všechny prostory,
+ * propojuje je vzájemně pomocí východů
+ * a pamatuje si aktuální prostor, ve kterém se hráč právě nachází.
  *
  *@author     Amelie Engelmaierová
  */
@@ -32,9 +32,12 @@ public class HerniPlan implements PredmetPozorovani {
     private int rustStage;  // 0: not planted, 1-4: growth stages
     private Map<ZmenaHry, Set<Pozorovatel>> seznamPozorovatelu = new HashMap<>();
 
+    // Mapa pro ukládání, odkud věci původně jsou
+    private Map<String, Prostor> puvodniLokaceVeci = new HashMap<>();
+
     /**
-     *  Konstruktor který vytváří jednotlivé prostory a propojuje je pomocí východů.
-     *  Jako výchozí aktuální prostor nastaví halu.
+     * Konstruktor který vytváří jednotlivé prostory a propojuje je pomocí východů.
+     * Jako výchozí aktuální prostor nastaví halu.
      */
     public HerniPlan() {
         batoh = new Batoh(5);
@@ -44,10 +47,11 @@ public class HerniPlan implements PredmetPozorovani {
         }
     }
     /**
-     *  Vytváří jednotlivé prostory a propojuje je pomocí východů.
-     *  Jako výchozí aktuální prostor nastaví domeček.
+     * Vytváří jednotlivé prostory a propojuje je pomocí východů.
+     * Jako výchozí aktuální prostor nastaví domeček.
      */
     private void zalozProstoryHry() {
+        // --- Ukládáme reference na prostory ---
         Prostor farma = new Prostor("farma", "zarostla farma tveho dedecka");
         Prostor louka = new Prostor("louka", "cesta z farmy ke vezi a do mesta");
         Prostor namesti = new Prostor("namesti", "centrum mestecka");
@@ -66,11 +70,27 @@ public class HerniPlan implements PredmetPozorovani {
         joja.setVychod(namesti);
         vez.setVychod(louka);
 
-        farma.vlozVec(new Vec("motyka", true));
-        farma.vlozVec(new Vec("konev", true));
+        // --- Věci na farmě ---
+        Vec motyka = new Vec("motyka", true);
+        farma.vlozVec(motyka);
+        puvodniLokaceVeci.put("motyka", farma);
 
-        louka.vlozVec(new Vec("klacky", false));
-        namesti.vlozVec(new Vec("kamen", false));
+        Vec konev = new Vec("konev", true);
+        farma.vlozVec(konev);
+        puvodniLokaceVeci.put("konev", farma);
+
+        Vec seminko = new Vec("seminko", true);
+        obchod.vlozVec(seminko);
+        puvodniLokaceVeci.put("seminko", obchod);
+
+        // --- Ostatní věci ---
+        Vec klacky = new Vec("klacky", true);
+        louka.vlozVec(klacky);
+        puvodniLokaceVeci.put("klacky", louka);
+
+        Vec kamen = new Vec("kamen", false);
+        namesti.vlozVec(kamen);
+        puvodniLokaceVeci.put("kamen", namesti);
 
         namesti.vlozNpc(new Npc("lewis"));
         louka.vlozNpc(new Npc("robin"));
@@ -84,7 +104,7 @@ public class HerniPlan implements PredmetPozorovani {
     }
 
     /**
-     *  Metoda vrací odkaz na aktuální prostor, ve ktetém se hráč právě nachází.
+     * Metoda vrací odkaz na aktuální prostor, ve ktetém se hráč právě nachází.
      *
      *@return     aktuální prostor
      */
@@ -94,7 +114,7 @@ public class HerniPlan implements PredmetPozorovani {
     }
 
     /**
-     *  Metoda nastaví aktuální prostor, používá se nejčastěji při přechodu mezi prostory
+     * Metoda nastaví aktuální prostor, používá se nejčastěji při přechodu mezi prostory
      *
      *@param  prostor nový aktuální prostor
      */
@@ -139,14 +159,14 @@ public class HerniPlan implements PredmetPozorovani {
             zalivani++;
             String currentStage = "rust" + zalivani;
             String nextStage = (zalivani == 4) ? "sklizen" : "rust" + (zalivani + 1);
-            
+
             farma.odeberVec(currentStage);
             farma.vlozVec(new Vec(nextStage, false));
-            
+
             upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI);
         }
     }
-    
+
     public int getZalivani() {
         return zalivani;
     }
@@ -184,6 +204,33 @@ public class HerniPlan implements PredmetPozorovani {
         penize -= hodnota;
         return true;
     }
+
+    // ------ NOVÁ METODA PRO VYHOZENÍ VĚCI ------
+    /**
+     * Pokusí se vyhodit věc z batohu. Věc se vrátí do své původní lokace.
+     * @param nazevVeci Název věci k vyhození.
+     * @return Textový výsledek akce.
+     */
+    public String vyhodVec(String nazevVeci) {
+        if (!batoh.obsahujeVec(nazevVeci)) {
+            return "Takovou věc v batohu nemáš.";
+        }
+
+        Prostor puvodniProstor = puvodniLokaceVeci.get(nazevVeci);
+        if (puvodniProstor == null) {
+            // Toto platí pro věci jako 'pastinak', které nemají původní lokaci
+            return "Věc '" + nazevVeci + "' nemůžeš jen tak vyhodit, je příliš cenná.";
+        }
+
+        Vec vec = batoh.odeberVec(nazevVeci);
+        puvodniProstor.vlozVec(vec); // Vrátí věc na původní místo
+
+        upozorniNaZmenuInventare(); // Aktualizuje batoh
+        upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI); // Aktualizuje mapu (věc se objevila)
+
+        return "Vyhodil jsi " + nazevVeci + ".";
+    }
+    // ------------------------------------------
 
     @Override
     public void registruj(ZmenaHry zmenaHry, Pozorovatel pozorovatel) {

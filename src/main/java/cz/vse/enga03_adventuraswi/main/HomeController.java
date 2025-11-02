@@ -67,8 +67,6 @@ public class HomeController {
 
     // zamek proti akcim po konci hry
     private boolean jeHraUkoncena = false;
-    // ------------------------------------
-
 
     // pozice hrace na mape (souradnice)
     private Map<String, Point2D> souradniceProstoru = new HashMap<>();    @FXML
@@ -118,7 +116,6 @@ public class HomeController {
 
         // reset zamku
         this.jeHraUkoncena = false;
-        // ----------------------------------------
 
         // sledovani zmen (mistnost, konec, inventar)
         hra.getHerniPlan().registruj(ZmenaHry.ZMENA_MISTNOSTI, this::aktualizujPolohuHrace);
@@ -134,7 +131,7 @@ public class HomeController {
 
         // inicializace pozice hrace
         vlozSouradnice();
-        aktualizujPolohuHrace(); // hrac na start
+        nastavPocatecniPolohuHrace(); // hrac na start (BEZ ANIMACE)
 
         // nastaveni aktualniho tematu
         aplikovatTema(lightModeMenuItem != null ? lightModeMenuItem.isSelected() : true); // nastaveni vzhledu
@@ -142,6 +139,22 @@ public class HomeController {
         // aktualizace viditelnosti predmetu
         aktualizujPredmety(); // zobrazeni predmetu
 
+    }
+
+    /**
+     * Nastaví počáteční polohu hráče na mapě ihned, bez animace.
+     * Používá se jen při restartu hry.
+     */
+    private void nastavPocatecniPolohuHrace() {
+        // ziskani cilovych souradnic
+        String prostor = hra.getHerniPlan().getAktualniProstor().getNazev();
+        Point2D noveSouradnice = souradniceProstoru.get(prostor);
+
+        // Nastaveni pozice primo, bez animace
+        if (noveSouradnice != null) {
+            hrac.setLayoutX(noveSouradnice.getX());
+            hrac.setLayoutY(noveSouradnice.getY());
+        }
     }
 
     @FXML
@@ -209,8 +222,6 @@ public class HomeController {
     private void zobrazAkceRostliny() {
         // kontrola zamku
         if (jeHraUkoncena) return;
-        // -----------------------------
-
         zrusitVyberObjektu(); // zrusi predchozi vyber
         ImageView plantView = rustStages;
         zvyraznitObjekt(plantView); // zvyrazni rostlinu
@@ -286,7 +297,6 @@ public class HomeController {
     private void zobrazAkceNpc(String jmenoNpc) {
         // kontrola zamku
         if (jeHraUkoncena) return;
-        // -----------------------------
 
         zrusitVyberObjektu();
         zvyraznitObjekt(getNpcImageView(jmenoNpc)); // zvyrazneni npc
@@ -330,7 +340,6 @@ public class HomeController {
     private void zobrazAkcePredmet(String nazevPredmetu) {
         // kontrola zamku
         if (jeHraUkoncena) return;
-        // -----------------------------
 
         zrusitVyberObjektu();
         zvyraznitObjekt(getPredmetImageView(nazevPredmetu)); // zvyrazneni predmetu
@@ -404,7 +413,6 @@ public class HomeController {
     private void klikProstor(String nazevProstoru) {
         // kontrola zamku
         if (jeHraUkoncena) return;
-        // -----------------------------
 
         String prikaz = PrikazJdi.NAZEV + " " + nazevProstoru; // sestaveni prikazu "jdi"
         zpracujPrikaz(prikaz); // zpracovani
@@ -422,6 +430,9 @@ public class HomeController {
 
     // animovany presun hrace
     private void aktualizujPolohuHrace() {
+        // Okamžitě aktualizujeme předměty, jakmile se změní prostor
+        aktualizujPredmety();
+
         // ziskani cilovych souradnic
         String prostor = hra.getHerniPlan().getAktualniProstor().getNazev(); // cilova mistnost
         Point2D noveSouradnice = souradniceProstoru.get(prostor); // cilove souradnice
@@ -446,7 +457,6 @@ public class HomeController {
             pridejVystup(hra.vratEpilog()); // zobrazeni epilogu
             this.jeHraUkoncena = true; // zamknuti hry
             zrusitVyberObjektu(); // zruseni vyberu
-            // ------------------------------------
         }
     }
 
@@ -544,8 +554,7 @@ public class HomeController {
     private void aktualizujObsahBatohu() {
         batohContentPane.getChildren().clear(); // vycisteni obsahu
 
-        // projde predmety, ktere mohou byt v batohu
-        for (String nazevPredmetu : new String[]{"motyka", "konev", "seminko", "pastinak"}) {
+        for (String nazevPredmetu : new String[]{"motyka", "konev", "seminko", "pastinak", "klacky", "kamen"}) {
             // pokud je predmet v batohu
             if (hra.getHerniPlan().getBatoh().obsahujeVec(nazevPredmetu)) {
                 ImageView itemImage;
@@ -555,6 +564,12 @@ public class HomeController {
                     itemImage = new ImageView(img);
                 } else if (nazevPredmetu.equals("pastinak")) {
                     Image img = new Image(getClass().getResourceAsStream("/cz/vse/enga03_adventuraswi/main/veci/pastinak.png"));
+                    itemImage = new ImageView(img);
+                } else if (nazevPredmetu.equals("klacky")) {
+                    Image img = new Image(getClass().getResourceAsStream("/cz/vse/enga03_adventuraswi/main/veci/klacky.png"));
+                    itemImage = new ImageView(img);
+                } else if (nazevPredmetu.equals("kamen")) {
+                    Image img = new Image(getClass().getResourceAsStream("/cz/vse/enga03_adventuraswi/main/veci/kamen.png"));
                     itemImage = new ImageView(img);
                 } else {
                     itemImage = new ImageView(getPredmetImageView(nazevPredmetu).getImage());
@@ -574,7 +589,6 @@ public class HomeController {
     private void zobrazAkcePredmetuInventare(String nazevPredmetu) {
         // kontrola zamku
         if (jeHraUkoncena) return;
-        // -----------------------------
 
         akcePanel.getChildren().clear();
         String aktualniProstor = hra.getHerniPlan().getAktualniProstor().getNazev();
@@ -615,6 +629,18 @@ public class HomeController {
                 akcePanel.getChildren().add(sklidButton);
             }
         }
+
+        // Lze vyhodit všechno kromě pastinaku (ten nemá původní lokaci)
+        if (!nazevPredmetu.equals("pastinak")) {
+            Button vyhodButton = new Button("Vyhodit");
+            vyhodButton.setOnAction(event -> {
+                zpracujPrikaz("vyhod " + nazevPredmetu);
+                aktualizujObsahBatohu(); // Zmizí z batohu
+                aktualizujPredmety(); // Objeví se na mapě
+                zrusitVyberObjektu(); // Zavře panel akcí
+            });
+            akcePanel.getChildren().add(vyhodButton);
+        }
     }
 
     @FXML
@@ -622,7 +648,6 @@ public class HomeController {
     private void prepnoutBatoh() {
         // kontrola zamku
         if (jeHraUkoncena) return;
-        // -----------------------------
 
         boolean jeBatohOtevreny = batohContentPane.isVisible(); // zjisteni stavu batohu
 

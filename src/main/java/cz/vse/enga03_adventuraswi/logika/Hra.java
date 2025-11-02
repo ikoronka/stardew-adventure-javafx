@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *  Třída Hra - třída představující logiku adventury.
+ * Třída Hra - třída představující logiku adventury.
  *
  *
  *@author     Amelie Engelmaierová
@@ -25,7 +25,7 @@ public class Hra implements IHra {
     private Map<ZmenaHry, Set<Pozorovatel>> seznamPozorovatelu = new HashMap<>();
 
     /**
-     *  Vytváří hru a inicializuje místnosti (prostřednictvím třídy HerniPlan) a seznam platných příkazů.
+     * Vytváří hru a inicializuje místnosti (prostřednictvím třídy HerniPlan) a seznam platných příkazů.
      */
     public Hra() {
         herniPlan = new HerniPlan();
@@ -42,13 +42,16 @@ public class Hra implements IHra {
         platnePrikazy.vlozPrikaz(new PrikazMluv(herniPlan, this));
         platnePrikazy.vlozPrikaz(new PrikazUraz(herniPlan, this));
 
+        // ------ ZDE JE ZMĚNA ------
+        platnePrikazy.vlozPrikaz(new PrikazVyhod(herniPlan, this)); // Přidali jsme 'this'
+
         for (ZmenaHry zmenaHry : ZmenaHry.values()) {
             seznamPozorovatelu.put(zmenaHry, new HashSet<>());
         }
     }
 
     /**
-     *  Vrátí úvodní zprávu pro hráče.
+     * Vrátí úvodní zprávu pro hráče.
      */
     public String vratUvitani() {
         String uvod = "Vitejte na dedeckove farme!\n" +
@@ -64,7 +67,7 @@ public class Hra implements IHra {
     }
 
     /**
-     *  Vrátí závěrečnou zprávu pro hráče.
+     * Vrátí závěrečnou zprávu pro hráče.
      */
     public String vratEpilog() {
         return "Dík, že jste si zahráli.";
@@ -78,9 +81,9 @@ public class Hra implements IHra {
     }
 
     /**
-     *  Metoda zpracuje řetězec uvedený jako parametr, rozdělí ho na slovo příkazu a další parametry.
-     *  Pak otestuje zda příkaz je klíčovým slovem  např. jdi.
-     *  Pokud ano spustí samotné provádění příkazu.
+     * Metoda zpracuje řetězec uvedený jako parametr, rozdělí ho na slovo příkazu a další parametry.
+     * Pak otestuje zda příkaz je klíčovým slovem  např. jdi.
+     * Pokud ano spustí samotné provádění příkazu.
      *
      *@param  radek  text, který zadal uživatel jako příkaz do hry.
      *@return          vrací se řetězec, který se má vypsat na obrazovku
@@ -105,10 +108,10 @@ public class Hra implements IHra {
 
 
     /**
-     *  Nastaví, že je konec hry, metodu využívá třída PrikazKonec,
-     *  mohou ji použít i další implementace rozhraní Prikaz.
+     * Nastaví, že je konec hry, metodu využívá třída PrikazKonec,
+     * mohou ji použít i další implementace rozhraní Prikaz.
      *
-     *  @param  konecHry  hodnota false= konec hry, true = hra pokračuje
+     * @param  konecHry  hodnota false= konec hry, true = hra pokračuje
      */
     public void setKonecHry(boolean konecHry) {
         this.konecHry = konecHry;
@@ -116,10 +119,10 @@ public class Hra implements IHra {
     }
 
     /**
-     *  Metoda vrátí odkaz na herní plán, je využita hlavně v testech,
-     *  kde se jejím prostřednictvím získává aktualní místnost hry.
+     * Metoda vrátí odkaz na herní plán, je využita hlavně v testech,
+     * kde se jejím prostřednictvím získává aktualní místnost hry.
      *
-     *  @return     odkaz na herní plán
+     * @return     odkaz na herní plán
      */
     public HerniPlan getHerniPlan(){
         return herniPlan;
