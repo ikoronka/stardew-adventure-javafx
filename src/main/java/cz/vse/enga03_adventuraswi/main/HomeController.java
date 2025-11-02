@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
@@ -44,8 +45,6 @@ public class HomeController {
     @FXML
     private ImageView vez;
     @FXML
-    private ListView<Prostor> panelVychodu;
-    @FXML
     private Button tlacitkoOdesli;
     @FXML
     private TextArea vystup;
@@ -60,27 +59,30 @@ public class HomeController {
 
     private IHra hra = new Hra();
 
-    private ObservableList<Prostor> seznamVychodu = FXCollections.observableArrayList();
 
     // seznam souradnic jednotlivych prostoru
     private Map<String, Point2D> souradniceProstoru = new HashMap<>();
+    
+    @FXML
+    private VBox akcePanel;
+    
+    @FXML
+    private ImageView pierre, lewis, caroline, kouzelnik, robin, morris;
+    
+    @FXML
+    private ImageView klacky, kamen, motyka, konev;
+
+    private ImageView selectedObject = null;
 
     @FXML
     private void initialize() {
         vystup.appendText(hra.vratUvitani() + "\n\n");
         Platform.runLater(() -> vstup.requestFocus());
-        panelVychodu.setItems(seznamVychodu);
-        hra.getHerniPlan().registruj(ZmenaHry.ZMENA_MISTNOSTI, () -> {
-            aktualizujSeznamVychodu();
-            aktualizujPolohuHrace();
-        });
-        hra.registruj(ZmenaHry.KONEC_HRY, () -> aktualizujKonecHry());
+        hra.getHerniPlan().registruj(ZmenaHry.ZMENA_MISTNOSTI, this::aktualizujPolohuHrace);
+        hra.registruj(ZmenaHry.KONEC_HRY, this::aktualizujKonecHry);
 
-        aktualizujSeznamVychodu();
         vlozSouradnice();
         nastavKlikProstoru();
-
-        panelVychodu.setCellFactory(param -> new ListCellProstor());
         
         // Initialize theme
         aplikovatTema(true);
@@ -120,6 +122,112 @@ public class HomeController {
         obchod.setOnMouseClicked(event -> klikProstor("obchod"));
         joja.setOnMouseClicked(event -> klikProstor("joja"));
         vez.setOnMouseClicked(event -> klikProstor("vez"));
+        
+        // Nastavení kliknutí pro NPC
+        pierre.setOnMouseClicked(event -> zobrazAkceNpc("pierre"));
+        lewis.setOnMouseClicked(event -> zobrazAkceNpc("lewis"));
+        caroline.setOnMouseClicked(event -> zobrazAkceNpc("caroline"));
+        kouzelnik.setOnMouseClicked(event -> zobrazAkceNpc("kouzelnik"));
+        robin.setOnMouseClicked(event -> zobrazAkceNpc("robin"));
+        morris.setOnMouseClicked(event -> zobrazAkceNpc("morris"));
+        
+        // Nastavení kliknutí pro předměty
+        klacky.setOnMouseClicked(event -> zobrazAkcePredmet("klacky"));
+        kamen.setOnMouseClicked(event -> zobrazAkcePredmet("kamen"));
+        motyka.setOnMouseClicked(event -> zobrazAkcePredmet("motyka"));
+        konev.setOnMouseClicked(event -> zobrazAkcePredmet("konev"));
+    }
+    
+    private void zobrazAkceNpc(String jmenoNpc) {
+        // Zvýraznění vybraného NPC
+        zrusitVyberObjektu();
+        zvyraznitObjekt(getNpcImageView(jmenoNpc));
+
+        akcePanel.getChildren().clear();
+
+        if (!hra.getHerniPlan().getAktualniProstor().obsahujeNpc(jmenoNpc)) {
+            Label upozorneni = new Label("Nejsi ve stejném prostoru!");
+            upozorneni.setStyle("-fx-font-weight: bold; -fx-text-fill: red;");
+            akcePanel.getChildren().add(upozorneni);
+            return;
+        }
+
+        Button mluvButton = new Button("Mluvit");
+        mluvButton.setMaxWidth(Double.MAX_VALUE);
+        mluvButton.setOnAction(event -> {
+            zpracujPrikaz("mluv " + jmenoNpc);
+            zrusitVyberObjektu();
+        });
+        
+        Button urazButton = new Button("Urazit");
+        urazButton.setMaxWidth(Double.MAX_VALUE);
+        urazButton.setOnAction(event -> {
+            zpracujPrikaz("uraz " + jmenoNpc);
+            zrusitVyberObjektu();
+        });
+        
+        akcePanel.getChildren().addAll(mluvButton, urazButton);
+    }
+    
+    private void zobrazAkcePredmet(String nazevPredmetu) {
+        // Zvýraznění vybraného předmětu
+        zrusitVyberObjektu();
+        zvyraznitObjekt(getPredmetImageView(nazevPredmetu));
+
+        akcePanel.getChildren().clear();
+
+        if (!hra.getHerniPlan().getAktualniProstor().obsahujePredmet(nazevPredmetu)) {
+            Label upozorneni = new Label("Nejsi ve stejném prostoru!");
+            upozorneni.setStyle("-fx-font-weight: bold; -fx-text-fill: red;");
+            akcePanel.getChildren().add(upozorneni);
+            return;
+        }
+
+        Button vezmiButton = new Button("Vzít");
+        vezmiButton.setMaxWidth(Double.MAX_VALUE);
+        vezmiButton.setOnAction(event -> {
+            zpracujPrikaz("vezmi " + nazevPredmetu);
+            zrusitVyberObjektu();
+        });
+
+        akcePanel.getChildren().add(vezmiButton);
+    }
+    
+    private void zvyraznitObjekt(ImageView imageView) {
+        if (imageView != null) {
+            imageView.setOpacity(0.7);
+            selectedObject = imageView;
+        }
+    }
+    
+    private void zrusitVyberObjektu() {
+        if (selectedObject != null) {
+            selectedObject.setOpacity(1.0);
+            selectedObject = null;
+        }
+        akcePanel.getChildren().clear();
+    }
+    
+    private ImageView getNpcImageView(String jmenoNpc) {
+        return switch (jmenoNpc) {
+            case "pierre" -> pierre;
+            case "lewis" -> lewis;
+            case "caroline" -> caroline;
+            case "kouzelnik" -> kouzelnik;
+            case "robin" -> robin;
+            case "morris" -> morris;
+            default -> null;
+        };
+    }
+    
+    private ImageView getPredmetImageView(String nazevPredmetu) {
+        return switch (nazevPredmetu) {
+            case "klacky" -> klacky;
+            case "kamen" -> kamen;
+            case "motyka" -> motyka;
+            case "konev" -> konev;
+            default -> null;
+        };
     }
 
     private void klikProstor(String nazevProstoru) {
@@ -128,12 +236,12 @@ public class HomeController {
     }
 
     private void vlozSouradnice() {
-        souradniceProstoru.put("farma", new Point2D(127, 69));
-        souradniceProstoru.put("louka", new Point2D(179, 165));
-        souradniceProstoru.put("namesti", new Point2D(392, 222));
-        souradniceProstoru.put("obchod", new Point2D(598, 99));
-        souradniceProstoru.put("joja", new Point2D(569, 300));
-        souradniceProstoru.put("vez", new Point2D(14, 236));
+        souradniceProstoru.put("farma", new Point2D(126, 100));
+        souradniceProstoru.put("louka", new Point2D(148, 236));
+        souradniceProstoru.put("namesti", new Point2D(358, 267));
+        souradniceProstoru.put("obchod", new Point2D(358, 132));
+        souradniceProstoru.put("joja", new Point2D(575, 300));
+        souradniceProstoru.put("vez", new Point2D(39, 236));
     }
 
     private void aktualizujPolohuHrace() {
@@ -153,19 +261,13 @@ public class HomeController {
         timeline.play();
     }
 
-    @FXML
-    private void aktualizujSeznamVychodu() {
-        seznamVychodu.clear();
-        seznamVychodu.addAll(hra.getHerniPlan().getAktualniProstor().getVychody());
-    }
 
     private void aktualizujKonecHry() {
 
         if(hra.konecHry()) {
             vystup.appendText(hra.vratEpilog());
             vstup.setDisable(true);
-            tlacitkoOdesli.setDisable(true);
-            panelVychodu.setDisable(true);
+        tlacitkoOdesli.setDisable(true);
         }
     }
 
@@ -191,13 +293,6 @@ public class HomeController {
         }
     }
 
-    @FXML
-    private void klikPanelVychodu(MouseEvent mouseEvent) {
-        Prostor cil = panelVychodu.getSelectionModel().getSelectedItem();
-        if(cil == null) return;
-        String prikaz = PrikazJdi.NAZEV +  " " + cil.getNazev();
-        zpracujPrikaz(prikaz);
-    }
 
     @FXML
     private void napovedaKlik(ActionEvent actionEvent) {

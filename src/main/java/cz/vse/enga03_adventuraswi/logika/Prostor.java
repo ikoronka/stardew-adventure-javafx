@@ -211,6 +211,13 @@ public class Prostor {
     }
 
     /**
+     * Vrací true, pokud se v prostoru nachází NPC se zadaným jménem.
+     */
+    public boolean obsahujeNpc(String jmeno) {
+        return najdiNpc(jmeno) != null;
+    }
+
+    /**
      * Vraci textovy popis postav v prostoru.
      */
     public String seznamNpc() {
@@ -232,5 +239,12 @@ public class Prostor {
             }
         }
         return null;
+    }
+
+    /**
+     * Vrací true, pokud se v prostoru nachází předmět se zadaným názvem.
+     */
+    public boolean obsahujePredmet(String nazev) {
+        return najdiVec(nazev) != null;
     }
 }

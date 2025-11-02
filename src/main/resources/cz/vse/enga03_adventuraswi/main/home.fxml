@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -17,18 +15,17 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.RadioMenuItem?>
-<?import javafx.scene.control.ToggleGroup?>
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="842.0" prefWidth="1149.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.vse.enga03_adventuraswi.main.HomeController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints vgrow="NEVER" />
         <RowConstraints vgrow="NEVER" />
         <RowConstraints vgrow="ALWAYS" />
-        <RowConstraints maxHeight="45.0" minHeight="45.0" prefHeight="45.0" vgrow="NEVER" />
         <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" vgrow="NEVER" />
     </rowConstraints>
     <children>
@@ -52,24 +49,7 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <HBox spacing="10.0" GridPane.rowIndex="3">
-            <children>
-                <TextField fx:id="vstup" onAction="#odesliVstup" HBox.hgrow="ALWAYS">
-                    <HBox.margin>
-                        <Insets bottom="10.0" left="10.0" top="10.0" />
-                    </HBox.margin></TextField>
-                <Button fx:id="tlacitkoOdesli" mnemonicParsing="false" onAction="#odesliVstup" text="Odešli">
-                    <HBox.margin>
-                        <Insets bottom="10.0" right="10.0" top="10.0" />
-                    </HBox.margin></Button>
-            </children>
-        </HBox>
-        <SplitPane dividerPositions="0.5" GridPane.rowIndex="2">
-            <items>
-                <ListView fx:id="panelVychodu" onMouseClicked="#klikPanelVychodu" />
-                <TextArea fx:id="vystup" editable="false" />
-            </items>
-        </SplitPane>
+        <TextArea fx:id="vystup" editable="false" GridPane.columnSpan="2" GridPane.rowIndex="2" />
         <TitledPane alignment="TOP_CENTER" animated="false" text="mapa" GridPane.rowIndex="1" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <content>
                 <HBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="727.0">
@@ -114,11 +94,6 @@
                                             <Image url="@prostory/farma.png" />
                                         </image>
                                     </ImageView>
-                                    <ImageView fx:id="hrac" fitHeight="59.0" fitWidth="53.0" layoutX="126.0" layoutY="100.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@character.png" />
-                                        </image>
-                                    </ImageView>
                               <ImageView fx:id="klacky" fitHeight="50.0" fitWidth="50.0" layoutX="101.0" layoutY="328.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@veci/klacky.png" />
@@ -139,6 +114,11 @@
                                     <Image url="@veci/konev.png" />
                                  </image>
                               </ImageView>
+                                    <ImageView fx:id="hrac" fitHeight="59.0" fitWidth="53.0" layoutX="39.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@character.png" />
+                                        </image>
+                                    </ImageView>
                                 </children>
                             </Pane>
                         <ImageView fx:id="pierre" fitHeight="50.0" fitWidth="50.0" layoutX="440.0" layoutY="152.0" pickOnBounds="true" preserveRatio="true">
@@ -178,5 +158,34 @@
                 </HBox>
             </content>
         </TitledPane>
+      <VBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <TitledPane animated="false" text="Akce">
+               <content>
+                  <VBox fx:id="akcePanel" spacing="5.0">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </VBox>
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="Inventář">
+               <content>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@batoh.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
     </children>
 </GridPane>
