@@ -10,11 +10,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -114,5 +118,27 @@ public class HomeController {
         if(cil == null) return;
         String prikaz = PrikazJdi.NAZEV +  " " + cil.getNazev();
         zpracujPrikaz(prikaz);
+    }
+
+    @FXML
+    private void napovedaKlik(ActionEvent actionEvent) {
+
+        URL resourceUrl = getClass().getResource("/napoveda.html");
+
+        if (resourceUrl == null) {
+            System.err.println("Chyba: Soubor 'napoveda.html' nebyl nalezen. Ujistěte se, že je v 'src/main/resources'.");
+            // Můžete zde také zobrazit Alert uživateli
+            return;
+        }
+
+        Stage napovedaStage = new Stage();
+        WebView wv = new WebView();
+
+        wv.getEngine().load(resourceUrl.toExternalForm());
+
+        Scene napovedaScena = new Scene(wv, 800, 600);
+        napovedaStage.setScene(napovedaScena);
+        napovedaStage.setTitle("Nápověda");
+        napovedaStage.show();
     }
 }
