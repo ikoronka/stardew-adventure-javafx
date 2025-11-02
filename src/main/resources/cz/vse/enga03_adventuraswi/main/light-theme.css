@@ -1,0 +1,73 @@
+.root {
+    -fx-base: #ececec;
+    -fx-background: #ffffff;
+    -fx-control-inner-background: #ffffff;
+    -fx-control-inner-background-alt: derive(-fx-control-inner-background, 2%);
+    -fx-text-background-color: #000000;
+    -fx-accent: #0078d7;
+    -fx-font-family: "monospace";
+}
+
+.label, .menu-bar .label, .menu .label, .titled-pane > .title > .text {
+    -fx-text-fill: -fx-text-background-color;
+    -fx-font-family: "monospace";
+}
+
+.text-input .content,
+.text-area .content {
+    -fx-background-color: -fx-control-inner-background;
+}
+
+.list-cell {
+    -fx-text-fill: -fx-text-background-color;
+    -fx-font-family: "monospace";
+}
+
+.list-cell:filled:selected {
+    -fx-text-fill: white;
+}
+
+.titled-pane > .content {
+    -fx-background-color: -fx-background;
+}
+
+.game-output-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-background-color; /* Pouzije barvu textu z tematu */
+    -fx-text-alignment: CENTER; /* Centrovaní textu uvnitř labelu */
+    -fx-alignment: CENTER; /* Centrovaní labelu v kontejneru */
+    -fx-padding: 4 10 4 10;
+    -fx-font-family: "monospace";
+}
+
+.vystup-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+.vystup-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+#akcePanel .button {
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 3, 0, 1, 2);
+
+    -fx-padding: 10;
+    -fx-font-family: "monospace";
+    -fx-pref-width: 180px;
+    -fx-max-width: 180px;
+}
+
+#akcePanel .button:hover {
+    -fx-background-color: derive(-fx-accent, 20%);
+}
+
+#akcePanel .button:disabled {
+    -fx-background-color: -fx-base;
+    -fx-text-fill: derive(-fx-text-background-color, 50%);
+    -fx-opacity: 0.7;
+    -fx-effect: none;
+}

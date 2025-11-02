@@ -29,6 +29,7 @@ public class HerniPlan implements PredmetPozorovani {
     private boolean zasazeno;
     private int zalivani;
     private int penize;
+    private int rustStage;  // 0: not planted, 1-4: growth stages
     private Map<ZmenaHry, Set<Pozorovatel>> seznamPozorovatelu = new HashMap<>();
 
     /**
@@ -47,7 +48,7 @@ public class HerniPlan implements PredmetPozorovani {
      *  Jako výchozí aktuální prostor nastaví domeček.
      */
     private void zalozProstoryHry() {
-        farma = new Prostor("farma", "zarostla farma tveho dedecka");
+        Prostor farma = new Prostor("farma", "zarostla farma tveho dedecka");
         Prostor louka = new Prostor("louka", "cesta z farmy ke vezi a do mesta");
         Prostor namesti = new Prostor("namesti", "centrum mestecka");
         Prostor obchod = new Prostor("obchod", "obchod u Pierra");
@@ -67,18 +68,19 @@ public class HerniPlan implements PredmetPozorovani {
 
         farma.vlozVec(new Vec("motyka", true));
         farma.vlozVec(new Vec("konev", true));
-        farma.vlozVec(new Vec("klacky", false));
-        farma.vlozVec(new Vec("kamen", false));
 
+        louka.vlozVec(new Vec("klacky", false));
+        namesti.vlozVec(new Vec("kamen", false));
 
         namesti.vlozNpc(new Npc("lewis"));
         louka.vlozNpc(new Npc("robin"));
         obchod.vlozNpc(new Npc("pierre"));
         obchod.vlozNpc(new Npc("caroline"));
         vez.vlozNpc(new Npc("kouzelnik"));
-        joja.vlozNpc(new Npc("morriss"));
+        joja.vlozNpc(new Npc("morris"));
 
         aktualniProstor = farma;
+        this.farma = farma;  // Save reference to farma for later use
     }
 
     /**
@@ -96,9 +98,16 @@ public class HerniPlan implements PredmetPozorovani {
      *
      *@param  prostor nový aktuální prostor
      */
-    public void setAktualniProstor(Prostor prostor) {
+    public void nastavAktualniProstor(Prostor prostor) {
         aktualniProstor = prostor;
         upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI);
+    }
+
+    /**
+     * Upozorní pozorovatele na změnu inventáře
+     */
+    public void upozorniNaZmenuInventare() {
+        upozorniPozorovatele(ZmenaHry.ZMENA_INVENTARE);
     }
 
     public Batoh getBatoh() {
@@ -110,26 +119,54 @@ public class HerniPlan implements PredmetPozorovani {
     }
 
     public void zasad() {
+        // Kontrolu a odebrání semínka z batohu už provedl PrikazZasad.
+        // Tato metoda pouze nastaví herní stav po zasazení.
+
         zasazeno = true;
         zalivani = 0;
+
+        // Přidáme do farmy první fázi růstu, aby ji PrikazZalij našel
+        farma.vlozVec(new Vec("rust1", false));
+
+        // Upozorníme UI na změny (změnil se inventář v PrikazZasad
+        // a změnila se místnost - přibyl "rust1")
+        upozorniNaZmenuInventare();
+        upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI);
     }
 
     public void zalij() {
-        if (zasazeno) {
+        if (zasazeno && zalivani < 4) {
             zalivani++;
-            if (zalivani >= 4 && farma.najdiVec("pastinak") == null) {
-                farma.vlozVec(new Vec("pastinak", true));
-            }
+            String currentStage = "rust" + zalivani;
+            String nextStage = (zalivani == 4) ? "sklizen" : "rust" + (zalivani + 1);
+            
+            farma.odeberVec(currentStage);
+            farma.vlozVec(new Vec(nextStage, false));
+            
+            upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI);
         }
+    }
+    
+    public int getZalivani() {
+        return zalivani;
+    }
+
+    public void sklid() {
+        // Tuto metodu volá PrikazSklid *poté*, co úspěšně
+        // odebral "sklizen" z farmy a přidal "pastinak" do batohu.
+        // Jediný úkol této metody je resetovat stav pěstování.
+
+        zasazeno = false;
+        zalivani = 0;
+
+        // Upozorníme pozorovatele, že se změnil inventář (přibyl pastinak)
+        // a místnost (zmizel "sklizen")
+        upozorniNaZmenuInventare();
+        upozorniPozorovatele(ZmenaHry.ZMENA_MISTNOSTI);
     }
 
     public boolean jeDozrano() {
         return zalivani >= 4;
-    }
-
-    public void sklid() {
-        zasazeno = false;
-        zalivani = 0;
     }
 
     public int getPenize() {

@@ -46,6 +46,7 @@ public class Start extends Application
         loader.setLocation(Start.class.getResource("home.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
+
         stage.setScene(scene);
         stage.show();
         stage.setTitle("Stardew Valley");

@@ -42,6 +42,7 @@ public class PrikazDaruj implements IPrikaz {
                 return "Kouzelnik je urazen a uz ti nepomuze. Prohral jsi.";
             }
             plan.getBatoh().odeberVec(nazev);
+            plan.upozorniNaZmenuInventare();
             hra.setKonecHry(true);
             return "Kouzelnik dekuje za pastinak a zachrani mestecko. Vyhral jsi!";
         }

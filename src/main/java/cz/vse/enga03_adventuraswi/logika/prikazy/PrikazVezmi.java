@@ -35,6 +35,7 @@ public class PrikazVezmi implements IPrikaz {
             aktualni.vlozVec(vec);
             return "Batoh je plný.";
         }
+        plan.upozorniNaZmenuInventare();
         return "Sebral jsi " + nazev + ".";
     }
 

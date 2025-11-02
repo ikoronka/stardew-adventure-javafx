@@ -44,12 +44,13 @@ public class PrikazMluv implements IPrikaz {
                 if (!plan.odeberPenize(50)) {
                     return "Potrebujes 50g.";
                 }
-                Vec semeno = new Vec("semeno", true);
-                if (!plan.getBatoh().vlozVec(semeno)) {
-                    plan.getAktualniProstor().vlozVec(semeno);
-                    return "Batoh je plny, semeno je na zemi.";
+                Vec seminko = new Vec("seminko", true);
+                if (!plan.getBatoh().vlozVec(seminko)) {
+                    plan.getAktualniProstor().vlozVec(seminko);
+                    return "Batoh je plny, seminko je na zemi.";
                 }
-                return "Pierre ti prodal semeno.";
+                plan.upozorniNaZmenuInventare();
+                return "Pierre ti prodal seminko.";
             case "kouzelnik":
                 String msg = "";
                 msg = msg + "Kouzelnik si prohlizi tvou karmu a ceka na pastinak.";
